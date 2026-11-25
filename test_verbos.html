@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Test</title>
+</head>
+<body>
+<input type="text" id="verbo" placeholder="Escribe go, be o have">
+<button onclick="buscarVerbo()">Buscar verbo</button>
+<div id="resultado"></div>
+
+<script>
+function buscarVerbo() {
+  const input = document.getElementById('verbo').value.trim().toLowerCase();
+  const res = document.getElementById('resultado');
+  const VERBOS = {
+    go: { p: 'go/goes', pas: 'went', pp: 'gone', g: 'going', es: 'ir' },
+    be: { p: 'am/is/are', pas: 'was/were', pp: 'been', g: 'being', es: 'ser/estar' },
+    have: { p: 'have/has', pas: 'had', pp: 'had', g: 'having', es: 'tener' }
+  };
+  const v = VERBOS[input];
+  if (!v) {
+    res.innerHTML = '<h3>❌ No encontrado</h3>';
+    return;
+  }
+  res.innerHTML = `
+    <h3>✅ ${input}</h3>
+    <p>Presente: ${v.p}</p>
+    <p>Pasado: ${v.pas}</p>
+    <p>Participio: ${v.pp}</p>
+    <p>Gerundio: ${v.g}</p>
+    <p>Español: ${v.es}</p>
+  `;
+}
+
+function hablarFrase() {
+  alert('hablarFrase funciona');
+}
+</script>
+</body>
+</html>

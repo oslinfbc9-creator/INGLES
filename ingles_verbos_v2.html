@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inglés: Frases habladas + Verbos</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f4f7fb; color: #222; }
+  .container { max-width: 960px; margin: 20px auto; padding: 0 16px; }
+  h1 { font-size: 20px; text-align: center; margin-bottom: 24px; color: #1a3a6e; }
+  .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .section-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; color: #1a3a6e; display: flex; align-items: center; gap: 8px; }
+  input, select, button { font-size: 15px; padding: 10px 14px; border: 1px solid #c9d4e6; border-radius: 8px; width: 100%; margin-bottom: 12px; background: #fff; }
+  button { cursor: pointer; background: #1a3a6e; color: #fff; border: none; font-weight: 600; }
+  button:hover { background: #15315c; }
+  button.secondary { background: #6c757d; width: auto; padding: 10px 18px; border-radius: 8px; font-weight: 600; transition: all 0.2s ease; border: none; cursor: pointer; font-size: 14px; }
+  button.secondary:hover { background: #5a6268; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+  button.secondary:active { transform: translateY(0); }
+
+  /* Estilos para botones de acción principal */
+  button[onclick*="enviarAGemini"] { background: #1a3a6e; color: #fff; padding: 12px 24px; font-size: 15px; }
+  button[onclick*="enviarAGemini"]:hover { background: #15315c; }
+
+  /* Estilos para botón añadir biblioteca */
+  button[onclick*="anadirConIA"] { background: #2d5a27; color: #fff; padding: 12px 24px; font-size: 15px; }
+  button[onclick*="anadirConIA"]:hover { background: #244a1e; }
+
+  /* Estilos para botón limpiar */
+  button[onclick*="limpiarIA"] { background: #6c757d; color: #fff; padding: 12px 24px; font-size: 15px; }
+  button[onclick*="limpiarIA"]:hover { background: #5a6268; }
+
+  /* Estilos para botón escuchar respuesta */
+  button[onclick*="hablarFraseIA"] { background: #4a5568; color: #fff; padding: 12px 24px; font-size: 15px; width: 100%; margin-top: 10px; }
+  button[onclick*="hablarFraseIA"]:hover { background: #3d4752; }
+
+  /* Estilos para checkboxes con label */
+  .checkbox-group { display: flex; align-items: center; gap: 10px; margin: 12px 0; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
+  .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #1a3a6e; }
+  .checkbox-group label { cursor: pointer; font-size: 14px; color: #334155; line-height: 1.4; user-select: none; }
+  .btn-row { display: flex; gap: 10px; margin-bottom: 12px; }
+  .btn-row button { flex: 1; }
+  .result { margin-top: 14px; padding: 14px; background: #eef3fb; border-radius: 10px; min-height: 60px; display: none; }
+  .result h3 { margin: 0 0 8px 0; font-size: 16px; color: #1a3a6e; }
+  .result p { margin: 4px 0; font-size: 15px; line-height: 1.5; }
+  .example { font-style: italic; color: #444; margin-top: 8px; padding-left: 10px; border-left: 3px solid #1a3a6e; }
+  .traduccion { color: #2e7d32; font-weight: 600; margin-top: 6px; }
+  .tag { display: inline-block; background: #dce8f7; color: #1a3a6e; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-right: 6px; margin-bottom: 6px; }
+  .muted { color: #666; font-size: 13px; text-align: center; margin-top: 10px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 500px){ .grid-2 { grid-template-columns: 1fr; } }
+
+  /* Estilos para ejemplos por conjugacion */
+  .example-block { margin-top: 10px; padding: 10px; background: #fafafa; border-radius: 8px; border: 1px solid #e0e0e0; }
+  .example-label { font-size: 12px; font-weight: 700; color: #1a3a6e; margin: 6px 0 3px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+  .example-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 14px; }
+  .example-line .en { color: #1a3a6e; font-weight: 600; }
+  .example-line .es { color: #666; font-size: 12px; }
+  .btn-small { padding: 4px 10px; font-size: 12px; }
+
+  /* Layout con sidebar */
+  .layout { display: flex; gap: 20px; margin-top: 10px; }
+  .sidebar { width: 260px; flex-shrink: 0; }
+  .contenido-principal { flex: 1; }
+  .palabras-lista { max-height: 500px; overflow-y: auto; border: 1px solid #c9d4e6; border-radius: 8px; padding: 10px; background: #fff; }
+  .palabra-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 6px; border-bottom: 1px solid #eee; cursor: pointer; border-radius: 6px; margin-bottom: 4px; }
+  .palabra-item:hover { background: #f0f4fb; }
+  .palabra-item:last-child { border-bottom: none; }
+  .palabra-nombre { font-weight: 600; color: #1a3a6e; font-size: 14px; }
+  .palabra-trad { font-size: 12px; color: #666; }
+  .palabra-escuchar { background: none; border: 1px solid #1a3a6e; color: #1a3a6e; padding: 3px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+  .palabra-escuchar:hover { background: #1a3a6e; color: #fff; }
+
+  /* Estilos sección IA */
+  #prompt-ia { width: 100%; font-family: inherit; resize: vertical; }
+  #respuesta-ia { white-space: pre-wrap; }
+
+  @media (max-width: 700px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🎙️ Inglés: Frases habladas + Buscador de verbos</h1>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="section-title">📚 Biblioteca de estudio</div>
+      <div class="stats-barras" style="margin-bottom:10px;padding:8px;background:#eef3fb;border-radius:8px;font-size:13px;color:#1a3a6e;">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+          <div><strong>Total:</strong> <span id="stat-total">0</span></div>
+          <div><strong>Nuevas:</strong> <span id="stat-nuevas">0</span></div>
+          <div><strong>Aprendidas:</strong> <span id="stat-aprendidas">0</span></div>
+        </div>
+      </div>
+      <input type="text" id="filtro-lista" placeholder="Filtrar barra lateral..." oninput="poblarListaPalabras()" style="margin-bottom:8px;padding:7px 10px;font-size:13px;width:100%;box-sizing:border-box;">
+      <select id="filtro-tipo" onchange="poblarListaPalabras()" style="margin-bottom:8px;padding:7px 10px;font-size:13px;width:100%;box-sizing:border-box;">
+        <option value="todos">Todo (Verbos + Temas + Ejemplos)</option>
+        <option value="verbos">Solo Verbos</option>
+        <option value="temas">Solo Palabras y Temas</option>
+        <option value="ejemplos">Solo Ejemplos sueltos</option>
+      </select>
+      <div id="lista-palabras" class="palabras-lista"></div>
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="secondary btn-small" onclick="exportarBiblioteca()">💾 Exportar</button>
+        <button class="secondary btn-small" onclick="document.getElementById('importar-json').click()">📂 Importar</button>
+        <input type="file" id="importar-json" accept=".json" style="display:none;" onchange="importarBiblioteca(event)">
+      </div>
+      <div class="btn-row" style="margin-top:6px;">
+        <button class="secondary btn-small" onclick="autoOrganizarConIA()">🧠 Auto-organizar sin tema</button>
+        <button class="secondary btn-small" onclick="reforzarReferenciasCruzadasIA()">🔗 Reforzar referencias</button>
+      </div>
+    </div>
+
+    <div class="contenido-principal">
+      <div class="card">
+    <div class="section-title">🔊 Decir una frase en inglés</div>
+    <input type="text" id="frase" placeholder="Escribe una frase en inglés...">
+    <div class="btn-row">
+      <button onclick="hablarFrase()">▶ Escuchar frase</button>
+      <button class="secondary" onclick="detenerVoz()">⏹ Detener</button>
+    </div>
+    <div class="muted">Usa la voz del navegador. No necesita internet.</div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">🔍 Buscar conjugaciones de un verbo</div>
+    <input type="text" id="verbo" placeholder="Ejemplo: go, be, have, write...">
+    <button onclick="buscarVerbo()">Buscar verbo</button>
+    <div id="resultado" class="result"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">🤖 Estudiar con IA (Gemini)</div>
+    <div class="grid-2">
+      <input type="password" id="api-key" placeholder="Pega tu API Key de Google AI Studio (AIza...)">
+      <input type="text" id="modelo-ia" value="gemini-2.5-flash" placeholder="Nombre del modelo">
+    </div>
+    <div class="btn-row">
+      <button onclick="guardarApiKey()">💾 Guardar clave</button>
+      <button class="secondary" onclick="probarConexionGemini()">🔌 Probar conexión</button>
+    </div>
+    <textarea id="prompt-ia" rows="3" placeholder="Ejemplos: 'Explícame el verbo go', 'Dame 5 frases con be', 'Corrige esta frase: I is happy'"></textarea>
+    <div class="checkbox-group">
+      <input type="checkbox" id="envioAutoIA" onchange="toggleEnvioAutoIA()">
+      <label for="envioAutoIA">🔄 Enviar palabra a IA automáticamente al buscar/seleccionar</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="hablarAutoIA" onchange="toggleHablarAutoIA()">
+      <label for="hablarAutoIA">🔊 Hablar automáticamente después de responder</label>
+    </div>
+    <div style="margin:10px 0;padding:10px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+      <div style="font-size:13px;color:#1a3a6e;font-weight:600;margin-bottom:8px;">📁 Asignar a tema (opcional):</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <select id="tema-seleccionado" style="flex:1;padding:8px;border:1px solid #c9d4e6;border-radius:6px;font-size:13px;">
+          <option value="">-- Sin tema --</option>
+        </select>
+        <input type="text" id="nuevo-tema" placeholder="Nombre nuevo tema" style="flex:1;padding:8px;border:1px solid #c9d4e6;border-radius:6px;font-size:13px;">
+        <button onclick="crearTemaDesdeUI()" class="secondary" style="padding:8px 14px;font-size:13px;">➕ Crear</button>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button onclick="enviarAGemini()">📤 Enviar a Gemini</button>
+      <button onclick="anadirConIA()">✨ Añadir a biblioteca</button>
+      <button class="secondary" onclick="limpiarIA()">🗑 Limpiar</button>
+    </div>
+    <div id="respuesta-ia" class="result" style="display:none;"></div>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="secondary" onclick="hablarFraseIA()">🔊 Escuchar respuesta de IA</button>
+      <button class="secondary" onclick="detenerVoz()">⏹ Detener voz</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+let vozActual = null;
+let envioAutoIA = false;
+let hablarAutoIA = false;
+
+function toggleEnvioAutoIA() {
+  const cb = document.getElementById('envioAutoIA');
+  envioAutoIA = cb.checked;
+  alert(envioAutoIA ? '✅ Envío automático a IA activado' : '❌ Envío automático a IA desactivado');
+}
+
+function toggleHablarAutoIA() {
+  const cb = document.getElementById('hablarAutoIA');
+  hablarAutoIA = cb.checked;
+  alert(hablarAutoIA ? '✅ Hablar automáticamente activado' : '❌ Hablar automáticamente desactivado');
+}
+
+function hablarFrase() {
+  const texto = document.getElementById('frase').value.trim();
+  if (!texto) { alert('Escribe una frase primero.'); return; }
+  detenerVoz();
+  const u = new SpeechSynthesisUtterance(texto);
+  u.lang = 'en-US';
+  u.rate = 1;
+  u.pitch = 1;
+  vozActual = u;
+  speechSynthesis.speak(u);
+}
+
+function detenerVoz() {
+  speechSynthesis.cancel();
+  vozActual = null;
+}
+
+function hablarFraseVerbo(texto) {
+  detenerVoz();
+  const u = new SpeechSynthesisUtterance(texto);
+  u.lang = 'en-US';
+  u.rate = 0.9;
+  u.pitch = 1;
+  vozActual = u;
+  speechSynthesis.speak(u);
+}
+
+function buscarVerbo() {
+  const input = document.getElementById('verbo').value.trim().toLowerCase();
+  const res = document.getElementById('resultado');
+  if (!input) {
+    res.style.display = 'none';
+    return;
+  }
+  const v = obtenerVerbo(input);
+  if (!v) {
+    res.style.display = 'block';
+    res.innerHTML = '<h3>❌ Verbo no encontrado</h3><p>Intenta con la forma base (ejemplo: go, be, have).</p>';
+    return;
+  }
+  const ex = obtenerEjemplo(input);
+  const ejDefault = `I ${input.split('/')[0]} every day.`;
+  let ejemplosHTML = '';
+  if (ex) {
+    const bloque = (etiqueta, item) => `<div class="example-label">${etiqueta}</div><div class="example-line"><div><span class="en">${item.en}</span> <span class="es">(${item.es})</span></div><button class="secondary btn-small" onclick="hablarFraseVerbo(this.dataset.en)" data-en="${item.en.replace(/"/g, '&quot;')}">🔊</button></div>`;
+    ejemplosHTML = `<div class="example-block">${bloque('👤 Yo (1ª persona):', ex.pres1)}${bloque('👤 Él/Ella (3ª persona):', ex.pres3)}${bloque('⏳ Pasado:', ex.pas)}${bloque('🔗 Participio:', ex.pp)}${bloque('🔄 Gerundio (-ing):', ex.g)}</div>`;
+  } else {
+    ejemplosHTML = `<div class="example">Ejemplo: ${ejDefault}</div><button class="secondary btn-small" style="margin-top:8px;" onclick="hablarFraseVerbo(this.dataset.en)" data-en="${ejDefault.replace(/"/g, '&quot;')}">🔊 Escuchar ejemplo</button>`;
+  }
+  let botonEliminar = '';
+  if (bibliotecaIA.verbos[input]) {
+    botonEliminar = `<button class="secondary btn-small" style="margin-top:10px;" onclick="borrarDeBiblioteca('verbo', '${input.replace(/"/g, '&quot;')}')">🗑 Eliminar de biblioteca</button>`;
+  }
+
+  let seccionIA = '';
+  const vb = bibliotecaIA.verbos[input] || {};
+  if (vb.explicacionIA || vb.ejemplosIA) {
+    const expandido = vb.expandidoIA ? '' : 'style="display:none"';
+    const btnTexto = vb.expandidoIA ? '❌ Ocultar explicación de IA' : '✨ Ver explicación de IA';
+    seccionIA = `
+      <div style="margin-top:15px;padding:12px;background:#f0f7ff;border-radius:8px;border:1px solid #b3d9ff;">
+        <button class="secondary btn-small" onclick="toggleExplicacionIA('${input.replace(/"/g, '&quot;')}')" style="margin-bottom:10px;width:100%;">${btnTexto}</button>
+        <div id="explicacion-${input.replace(/"/g, '&quot;')}" ${expandido}>
+          <div style="margin-bottom:8px;"><strong>📖 Explicación de IA:</strong></div>
+          <div style="margin-bottom:8px;color:#334155;">${vb.explicacionIA || ''}</div>
+          ${vb.ejemplosIA && vb.ejemplosIA.length > 0 ? `
+            <div style="margin-top:8px;"><strong>📝 Ejemplos adicionales de IA:</strong></div>
+            ${vb.ejemplosIA.map(ex => `<div class="example-line" style="margin-bottom:4px;"><div><span class="en">${ex.en}</span> <span class="es">(${ex.es})</span></div><button class="secondary btn-small" onclick="hablarFraseVerbo('${ex.en.replace(/"/g, '&quot;')}')">🔊</button></div>`).join('')}
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  res.style.display = 'block';
+  res.innerHTML = `<h3>✅ ${input.charAt(0).toUpperCase() + input.slice(1)}</h3><div class="tag">Presente: ${v.p}</div><div class="tag">3ª persona: ${v.t3}</div><div class="tag">Pasado: ${v.pas}</div><div class="tag">Participio: ${v.pp}</div><div class="tag">Gerundio: ${v.g}</div><p class="traduccion">Español: ${v.es}</p>${ejemplosHTML}${seccionIA}${botonEliminar}`;
+
+  if (envioAutoIA) {
+    enviarPalabraAIA(input, v, ex);
+  }
+}
+
+function enviarPalabraAIA(verbo, datosVerbales, ejemplos) {
+  const ejemplosTexto = ejemplos
+    ? `- ${ejemplos.pres1.en} (${ejemplos.pres1.es})\n- ${ejemplos.pres3.en} (${ejemplos.pres3.es})\n- ${ejemplos.pas.en} (${ejemplos.pas.es})\n- ${ejemplos.pp.en} (${ejemplos.pp.es})\n- ${ejemplos.g.en} (${ejemplos.g.es})`
+    : '- No hay ejemplos disponibles.';
+
+  const prompt = `Eres un tutor experto de inglés para hispanohablantes. El usuario está estudiando inglés y quiere comprender mejor el verbo "${verbo}" con todas sus conjugaciones y ejemplos. Responde SIEMPRE en español de forma clara, educativa y alentadora. Explica cada conjugación, su uso, y los ejemplos con traducción al español. Da consejos prácticos para usar correctamente este verbo en conversación. Contexto de estudio: el usuario está aprendiendo inglés como segundo idioma y esta es una de las palabras que está estudiando actualmente.
+
+Verbo: ${verbo}
+Presente: ${datosVerbales.p}
+3ª persona: ${datosVerbales.t3}
+Pasado: ${datosVerbales.pas}
+Participio: ${datosVerbales.pp}
+Gerundio: ${datosVerbales.g}
+Traducción: ${datosVerbales.es}
+
+Ejemplos de uso:
+${ejemplosTexto}`;
+
+  const textarea = document.getElementById('prompt-ia');
+  textarea.value = prompt;
+  enviarAGemini();
+}
+
+function crearTema(titulo, tipo = 'Tema') {
+  const id = titulo.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_') || 'tema_' + Date.now();
+  if (!bibliotecaIA.temas[id]) {
+    bibliotecaIA.temas[id] = { titulo, tipo, palabras: [], explicacion: '', aprendida: false };
+    guardarBiblioteca();
+  }
+  return id;
+}
+
+function agregarPalabraATema(claveVerbo, temaId) {
+  if (!bibliotecaIA.temas[temaId]) return;
+  if (!bibliotecaIA.temas[temaId].palabras.includes(claveVerbo)) {
+    bibliotecaIA.temas[temaId].palabras.push(claveVerbo);
+  }
+  if (bibliotecaIA.verbos[claveVerbo]) {
+    bibliotecaIA.verbos[claveVerbo].temaId = temaId;
+  }
+  guardarBiblioteca();
+}
+
+function quitarPalabraDeTema(claveVerbo) {
+  if (bibliotecaIA.verbos[claveVerbo] && bibliotecaIA.verbos[claveVerbo].temaId) {
+    const temaId = bibliotecaIA.verbos[claveVerbo].temaId;
+    if (bibliotecaIA.temas[temaId]) {
+      bibliotecaIA.temas[temaId].palabras = bibliotecaIA.temas[temaId].palabras.filter(p => p !== claveVerbo);
+    }
+    delete bibliotecaIA.verbos[claveVerbo].temaId;
+    guardarBiblioteca();
+  }
+}
+
+function asignarVerboATema(claveVerbo, temaId) {
+  if (!temaId || temaId === '') {
+    quitarPalabraDeTema(claveVerbo);
+    return;
+  }
+  // Quitar de tema anterior si tenía
+  if (bibliotecaIA.verbos[claveVerbo] && bibliotecaIA.verbos[claveVerbo].temaId) {
+    quitarPalabraDeTema(claveVerbo);
+  }
+  if (bibliotecaIA.temas[temaId]) {
+    if (!bibliotecaIA.temas[temaId].palabras.includes(claveVerbo)) {
+      bibliotecaIA.temas[temaId].palabras.push(claveVerbo);
+    }
+  }
+  if (!bibliotecaIA.verbos[claveVerbo]) bibliotecaIA.verbos[claveVerbo] = {};
+  bibliotecaIA.verbos[claveVerbo].temaId = temaId;
+  guardarBiblioteca();
+  poblarListaPalabras();
+}
+
+function obtenerTemasConPalabras() {
+  const resultado = [];
+  for (const id in bibliotecaIA.temas) {
+    const tema = bibliotecaIA.temas[id];
+    const palabras = tema.palabras.map(p => ({
+      clave: p,
+      ...(bibliotecaIA.verbos[p] || {})
+    })).filter(p => p.clave);
+    resultado.push({ id, ...tema, palabras });
+  }
+  return resultado.sort((a, b) => a.titulo.localeCompare(b.titulo));
+}
+
+function extraerEjemplosDeRespuesta(texto) {
+  const ejemplos = [];
+  const lineas = texto.split('\n');
+  for (const linea of lineas) {
+    const l = linea.trim();
+    if (l.length < 5) continue;
+    if (l.includes('(') && l.includes(')') && (l.startsWith('-') || l.startsWith('•') || l.startsWith('*') || l.match(/^[A-Z]/))) {
+      const match = l.match(/^(.+?)\s*\((.+?)\)\s*$/);
+      if (match) {
+        ejemplos.push({ en: match[1].trim(), es: match[2].trim() });
+      } else if (l.includes('Ejemplo:') || l.includes('ejemplo:')) {
+        const partes = l.split(/:|-/);
+        if (partes.length >= 2) {
+          ejemplos.push({ en: partes[1].trim(), es: partes[2]?.trim() || '' });
+        }
+      }
+    }
+  }
+  return ejemplos.slice(0, 10);
+}
+
+function toggleExplicacionIA(clave) {
+  if (!bibliotecaIA.verbos[clave]) return;
+  bibliotecaIA.verbos[clave].expandidoIA = !bibliotecaIA.verbos[clave].expandidoIA;
+  guardarBiblioteca();
+  buscarVerbo();
+}
+
+let bibliotecaIA = { verbos: {}, ejemplos: {}, temas: {}, ejemplosSueltos: {} };
+try {
+  const g = localStorage.getItem('mi_biblioteca_ia');
+  if (g) {
+    const p = JSON.parse(g);
+    bibliotecaIA = { verbos: p.verbos || {}, ejemplos: p.ejemplos || {}, temas: p.temas || {}, ejemplosSueltos: p.ejemplosSueltos || {} };
+  }
+} catch (e) {}
+
+function guardarBiblioteca() {
+  try { localStorage.setItem('mi_biblioteca_ia', JSON.stringify(bibliotecaIA)); } catch (e) {}
+}
+
+function obtenerVerbo(clave) {
+  const base = VERBOS[clave];
+  const custom = bibliotecaIA.verbos[clave];
+  if (!base && !custom) return null;
+  return { ...(base || {}), ...(custom || {}) };
+}
+
+function obtenerEjemplo(clave) {
+  return bibliotecaIA.ejemplos[clave] || EJEMPLOS[clave] || null;
+}
+
+function actualizarStats() {
+  const todosVerbos = { ...VERBOS, ...bibliotecaIA.verbos };
+  const totalVerbos = Object.keys(todosVerbos).length;
+  const totalTemas = Object.keys(bibliotecaIA.temas).length;
+  const totalEjemplosSueltos = Object.keys(bibliotecaIA.ejemplosSueltos).length;
+  let aprendidas = 0;
+  for (const k in bibliotecaIA.verbos) if (bibliotecaIA.verbos[k].aprendida) aprendidas++;
+  for (const k in bibliotecaIA.temas) if (bibliotecaIA.temas[k].aprendida) aprendidas++;
+  for (const k in bibliotecaIA.ejemplosSueltos) if (bibliotecaIA.ejemplosSueltos[k].aprendida) aprendidas++;
+  const total = totalVerbos + totalTemas + totalEjemplosSueltos;
+  const nuevas = total - aprendidas;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-nuevas').textContent = nuevas;
+  document.getElementById('stat-aprendidas').textContent = aprendidas;
+}
+
+function poblarListaPalabras() {
+  const lista = document.getElementById('lista-palabras');
+  if (!lista) return;
+  const filtroTexto = (document.getElementById('filtro-lista')?.value || '').trim().toLowerCase();
+  const filtroTipo = document.getElementById('filtro-tipo')?.value || 'todos';
+  let html = '';
+  let num = 0;
+
+  if (filtroTipo === 'todos' || filtroTipo === 'temas') {
+    const temas = obtenerTemasConPalabras();
+    for (const tema of temas) {
+      if (!tema.titulo.toLowerCase().includes(filtroTexto)) continue;
+      const aprendida = tema.aprendida ? '✅' : '⬜';
+      num++;
+      html += `<div style="margin-bottom:12px;padding:10px;background:#f0f7ff;border-radius:8px;border:1px solid #b3d9ff;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-weight:bold;color:#1a3a6e;">${num}</span>
+            <span class="aprendida-btn" onclick="event.stopPropagation(); toggleAprendidaTema('${tema.id.replace(/"/g,'&quot;')}')" title="Marcar como aprendida">${aprendida}</span>
+            <strong>📁 ${tema.titulo}</strong>
+            <span class="tag" style="font-size:11px;">${tema.tipo || 'Tema'} (${tema.palabras.length})</span>
+          </div>
+          <button class="secondary btn-small" style="padding:4px 10px;font-size:12px;" onclick="mostrarTema('${tema.id.replace(/"/g, '&quot;')}')">Ver</button>
+        </div>
+        ${tema.palabras.length > 0 ? `
+          <div style="margin-left:20px;">
+            ${tema.palabras.map((p, i) => {
+              const esIA = bibliotecaIA.verbos[p.clave];
+              const aprendidaPalabra = esIA && esIA.aprendida ? '✅' : '⬜';
+              const marca = esIA ? '✨ ' : '';
+              return `<div class="palabra-item" style="display:flex;align-items:center;gap:6px;padding:4px 8px;border-bottom:1px solid #e0e0e0;margin-bottom:4px;border-radius:4px;" onclick="seleccionarPalabra('${p.clave.replace(/"/g, '&quot;')}')">
+                <span style="font-size:12px;color:#666;">${num + i + 1}</span>
+                <span class="aprendida-btn" onclick="event.stopPropagation(); toggleAprendidaVerbo('${p.clave.replace(/"/g,'&quot;')}')" title="Marcar como aprendida">${aprendidaPalabra}</span>
+                <div style="flex:1;">
+                  <div class="palabra-nombre" style="font-size:13px;">${marca}${p.clave}</div>
+                  <div class="palabra-trad" style="font-size:11px;color:#666;">${p.es || ''}</div>
+                </div>
+                <button class="palabra-escuchar" data-en="${p.clave.replace(/"/g, '&quot;')}" style="font-size:11px;padding:2px 6px;" onclick="event.stopPropagation(); hablarFraseVerbo(this.dataset.en)">🔊</button>
+              </div>`;
+            }).join('')}
+          </div>
+        ` : `<div style="margin-left:20px;color:#666;font-style:italic;font-size:12px;">Sin palabras asignadas</div>`}
+      </div>`;
+    }
+  }
+  if (filtroTipo === 'todos' || filtroTipo === 'verbos') {
+    const todos = { ...VERBOS, ...bibliotecaIA.verbos };
+    const claves = Object.keys(todos).sort();
+    for (const clave of claves) {
+      const v = todos[clave];
+      if (!clave.toLowerCase().includes(filtroTexto) && !v.es.toLowerCase().includes(filtroTexto)) continue;
+      num++;
+      const esIA = bibliotecaIA.verbos[clave];
+      const aprendida = esIA && esIA.aprendida ? '✅' : '⬜';
+      const marca = esIA ? '✨ ' : '';
+      const temaActual = v.temaId ? bibliotecaIA.temas[v.temaId]?.titulo : '';
+      const temaInfo = temaActual ? ` (📁 ${temaActual})` : '';
+      const esBiblioteca = bibliotecaIA.verbos[clave] ? true : false;
+      const selectTema = esBiblioteca && !v.temaId
+        ? `<select id="tema-${clave}" onchange="asignarVerboATema('${clave.replace(/"/g,'&quot;')}', this.value)" style="padding:2px 6px;font-size:11px;border:1px solid #c9d4e6;border-radius:4px;">
+            <option value="">-- Sin tema --</option>
+            ${Object.keys(bibliotecaIA.temas).map(id => `<option value="${id}">${bibliotecaIA.temas[id].titulo}</option>`).join('')}
+          </select>`
+        : '';
+      html += `<div class="palabra-item" data-clave="${clave.replace(/"/g, '&quot;')}" onclick="seleccionarPalabra(this.dataset.clave)" style="display:flex;align-items:center;gap:6px;padding:6px;border-bottom:1px solid #eee;border-radius:6px;">
+        <span style="font-weight:bold;color:#1a3a6e;">${num}</span>
+        <span class="aprendida-btn" onclick="event.stopPropagation(); toggleAprendidaVerbo('${clave.replace(/"/g,'&quot;')}')" title="Marcar como aprendida">${aprendida}</span>
+        <div style="flex:1;">
+          <div class="palabra-nombre">${marca}${clave}</div>
+          <div class="palabra-trad">${v.es}${temaInfo}</div>
+        </div>
+        ${selectTema}
+        <button class="palabra-escuchar" data-en="${clave.replace(/"/g, '&quot;')}" onclick="event.stopPropagation(); hablarFraseVerbo(this.dataset.en)">🔊</button>
+      </div>`;
+    }
+  }
+  if (filtroTipo === 'todos' || filtroTipo === 'ejemplos') {
+    const clavesEj = Object.keys(bibliotecaIA.ejemplosSueltos).sort();
+    for (const id of clavesEj) {
+      const e = bibliotecaIA.ejemplosSueltos[id];
+      if (!e.titulo.toLowerCase().includes(filtroTexto) && !e.es.toLowerCase().includes(filtroTexto)) continue;
+      num++;
+      const aprendida = e.aprendida ? '✅' : '⬜';
+      const voz = e.ejemploPrincipal || e.titulo;
+      html += `<div class="palabra-item" data-id="${id.replace(/"/g, '&quot;')}" onclick="mostrarEjemploSuelto(this.dataset.id)" style="display:flex;align-items:center;gap:6px;padding:6px;border-bottom:1px solid #eee;border-radius:6px;">
+        <span style="font-weight:bold;color:#1a3a6e;">${num}</span>
+        <span class="aprendida-btn" onclick="event.stopPropagation(); toggleAprendidaEjemploSuelto('${id.replace(/"/g,'&quot;')}')" title="Marcar como aprendida">${aprendida}</span>
+        <div style="flex:1;">
+          <div class="palabra-nombre">📝 ${e.titulo}</div>
+          <div class="palabra-trad">${e.es}</div>
+        </div>
+        <button class="palabra-escuchar" data-en="${voz.replace(/"/g, '&quot;')}" onclick="event.stopPropagation(); hablarFraseVerbo(this.dataset.en)">🔊</button>
+      </div>`;
+    }
+  }
+  lista.innerHTML = html || '<div class="muted">Sin resultados</div>';
+  actualizarStats();
+}
+
+function toggleAprendidaEjemploSuelto(id) {
+  if (bibliotecaIA.ejemplosSueltos[id]) {
+    bibliotecaIA.ejemplosSueltos[id].aprendida = !bibliotecaIA.ejemplosSueltos[id].aprendida;
+    guardarBiblioteca();
+    poblarListaPalabras();
+  }
+}
+
+function seleccionarPalabra(clave) {
+  document.getElementById('verbo').value = clave;
+  buscarVerbo();
+}
+
+function mostrarEjemploSuelto(id) {
+  const e = bibliotecaIA.ejemplosSueltos[id];
+  const res = document.getElementById('resultado');
+  if (!e || !res) return;
+  let ejs = '';
+  if (e.listaEjemplos && e.listaEjemplos.length) {
+    ejs = '<div class="example-block"><strong>Ejemplos:</strong><br>' + e.listaEjemplos.map(item => `<div class="example-line"><div><span class="en">${item.en}</span> <span class="es">(${item.es})</span></div><button class="secondary btn-small" data-en="${item.en.replace(/"/g, '&quot;')}" onclick="hablarFraseVerbo(this.dataset.en)">🔊</button></div>`).join('') + '</div>';
+  }
+  res.style.display = 'block';
+  res.innerHTML = `<h3>📝 ${e.titulo}</h3><div class="tag">${e.tipo || 'Ejemplo suelto'}</div><p class="traduccion">${e.es}</p><p>${e.explicacion || ''}</p>${ejs}<button class="secondary btn-small" style="margin-top:10px;" data-id="${id.replace(/"/g, '&quot;')}" onclick="borrarDeBiblioteca('ejemploSuelto', this.dataset.id)">🗑 Quitar de biblioteca</button>`;
+}
+
+function borrarDeBiblioteca(tipo, clave) {
+  if (tipo === 'tema') delete bibliotecaIA.temas[clave];
+  if (tipo === 'verbo') { delete bibliotecaIA.verbos[clave]; delete bibliotecaIA.ejemplos[clave]; }
+  if (tipo === 'ejemploSuelto') delete bibliotecaIA.ejemplosSueltos[clave];
+  guardarBiblioteca();
+  poblarListaPalabras();
+  document.getElementById('resultado').style.display = 'none';
+}
+
+function toggleAprendidaVerbo(clave) {
+  if (!bibliotecaIA.verbos[clave]) {
+    bibliotecaIA.verbos[clave] = { ...VERBOS[clave], aprendida: true };
+    bibliotecaIA.ejemplos[clave] = bibliotecaIA.ejemplos[clave] || EJEMPLOS[clave];
+  } else {
+    bibliotecaIA.verbos[clave].aprendida = !bibliotecaIA.verbos[clave].aprendida;
+  }
+  guardarBiblioteca();
+  poblarListaPalabras();
+}
+
+function toggleAprendidaTema(id) {
+  if (bibliotecaIA.temas[id]) {
+    bibliotecaIA.temas[id].aprendida = !bibliotecaIA.temas[id].aprendida;
+    guardarBiblioteca();
+    poblarListaPalabras();
+  }
+}
+
+function seleccionarPalabra(clave) {
+  document.getElementById('verbo').value = clave;
+  buscarVerbo();
+}
+
+function mostrarTema(id) {
+  const t = bibliotecaIA.temas[id];
+  const res = document.getElementById('resultado');
+  if (!t || !res) return;
+  let ejs = '';
+  if (t.ejemplos && t.ejemplos.length) {
+    ejs = '<div class="example-block">' + t.ejemplos.map(item => `<div class="example-line"><div><span class="en">${item.en}</span> <span class="es">(${item.es})</span></div><button class="secondary btn-small" data-en="${item.en.replace(/"/g, '&quot;')}" onclick="hablarFraseVerbo(this.dataset.en)">🔊</button></div>`).join('') + '</div>';
+  }
+  res.style.display = 'block';
+  res.innerHTML = `<h3>✨ ${t.titulo}</h3><div class="tag">${t.tipo || 'Tema'}</div><p class="traduccion">${t.es}</p><p>${t.explicacion}</p>${ejs}<button class="secondary btn-small" style="margin-top:10px;" data-id="${id.replace(/"/g, '&quot;')}" onclick="borrarDeBiblioteca('tema', this.dataset.id)">🗑 Quitar de biblioteca</button>`;
+}
+
+function borrarDeBiblioteca(tipo, clave) {
+  if (tipo === 'verbo') {
+    // Quitar de cualquier tema donde esté asignado
+    if (bibliotecaIA.verbos[clave] && bibliotecaIA.verbos[clave].temaId) {
+      const temaId = bibliotecaIA.verbos[clave].temaId;
+      if (bibliotecaIA.temas[temaId]) {
+        bibliotecaIA.temas[temaId].palabras = bibliotecaIA.temas[temaId].palabras.filter(p => p !== clave);
+      }
+    }
+    delete bibliotecaIA.verbos[clave];
+    delete bibliotecaIA.ejemplos[clave];
+  } else if (tipo === 'tema') {
+    delete bibliotecaIA.temas[clave];
+  } else if (tipo === 'ejemploSuelto') {
+    delete bibliotecaIA.ejemplosSueltos[clave];
+  }
+  guardarBiblioteca();
+  poblarListaPalabras();
+  document.getElementById('resultado').style.display = 'none';
+}
+
+function exportarBiblioteca() {
+  const blob = new Blob([JSON.stringify(bibliotecaIA, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mi-biblioteca-ingles.json';
+  a.click();
+}
+
+function importarBiblioteca(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      bibliotecaIA.verbos = { ...bibliotecaIA.verbos, ...(data.verbos || {}) };
+      bibliotecaIA.ejemplos = { ...bibliotecaIA.ejemplos, ...(data.ejemplos || {}) };
+      bibliotecaIA.temas = { ...bibliotecaIA.temas, ...(data.temas || {}) };
+      guardarBiblioteca();
+      poblarListaPalabras();
+      alert('Biblioteca importada correctamente.');
+    } catch (err) {
+      alert('Archivo JSON no válido.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+async function anadirConIA() {
+  const texto = document.getElementById('prompt-ia').value.trim();
+  const res = document.getElementById('respuesta-ia');
+  const modelo = document.getElementById('modelo-ia').value.trim() || 'gemini-2.5-flash';
+  const key = obtenerClave();
+  const temaSeleccionado = document.getElementById('tema-seleccionado')?.value || '';
+  const nuevoTemaNombre = document.getElementById('nuevo-tema')?.value.trim() || '';
+  if (!texto) { alert('Escribe qué verbos, palabras o temas quieres añadir (ej: "Añade los verbos travel y book, y un tema sobre in/on/at").'); return; }
+  if (!key) { alert('Primero introduce tu API Key.'); return; }
+  res.style.display = 'block';
+  res.textContent = '⏳ Generando contenido y guardando en tu barra lateral...';
+  const schema = {
+    type: 'OBJECT',
+    properties: {
+      verbos: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            base: { type: 'STRING' },
+            p: { type: 'STRING' },
+            t3: { type: 'STRING' },
+            pas: { type: 'STRING' },
+            pp: { type: 'STRING' },
+            g: { type: 'STRING' },
+            es: { type: 'STRING' },
+            pres1_en: { type: 'STRING' },
+            pres1_es: { type: 'STRING' },
+            pres3_en: { type: 'STRING' },
+            pres3_es: { type: 'STRING' },
+            pas_en: { type: 'STRING' },
+            pas_es: { type: 'STRING' },
+            pp_en: { type: 'STRING' },
+            pp_es: { type: 'STRING' },
+            g_en: { type: 'STRING' },
+            g_es: { type: 'STRING' }
+          },
+          required: ['base','p','t3','pas','pp','g','es','pres1_en','pres1_es','pres3_en','pres3_es','pas_en','pas_es','pp_en','pp_es','g_en','g_es']
+        }
+      },
+      temas: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            titulo: { type: 'STRING' },
+            tipo: { type: 'STRING' },
+            es: { type: 'STRING' },
+            explicacion: { type: 'STRING' },
+            ejemplos: {
+              type: 'ARRAY',
+              items: {
+                type: 'OBJECT',
+                properties: { en: { type: 'STRING' }, es: { type: 'STRING' } },
+                required: ['en', 'es']
+              }
+            }
+          },
+          required: ['titulo','tipo','es','explicacion','ejemplos']
+        }
+      },
+      ejemplosSueltos: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            titulo: { type: 'STRING' },
+            tipo: { type: 'STRING' },
+            es: { type: 'STRING' },
+            explicacion: { type: 'STRING' },
+            ejemploPrincipal: { type: 'STRING' },
+            listaEjemplos: {
+              type: 'ARRAY',
+              items: {
+                type: 'OBJECT',
+                properties: { en: { type: 'STRING' }, es: { type: 'STRING' } },
+                required: ['en', 'es']
+              }
+            }
+          },
+          required: ['titulo','tipo','es']
+        }
+      }
+    },
+    required: ['verbos','temas','ejemplosSueltos']
+  };
+  const instruccion = `Eres un profesor de inglés. Según la petición del usuario, genera:
+1) Verbos en inglés (en 'verbos', usando 'base' en minúsculas, p, t3, pas, pp, g, traducción 'es' y los 5 pares de ejemplos pres1, pres3, pas, pp, g)
+2) Vocabulario, expresiones o temas de gramática (en 'temas', con titulo claro, tipo 'Palabra' o 'Tema', resumen/traducción 'es', explicacion clara en español y ejemplos en inglés con traducción)
+3) Ejemplos sueltos como tablas, listas de contracciones, pronombres, usos (en 'ejemplosSueltos', con titulo claro, tipo 'Ejemplo', es=traducción/resumen, explicacion, ejemploPrincipal=frase principal para escuchar, y listaEjemplos=array de pares {en, es}).
+Petición: ${texto}`;
+  try {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelo)}:generateContent?key=${encodeURIComponent(key)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: instruccion }] }], generationConfig: { responseMimeType: 'application/json', responseSchema: schema } })
+    });
+    const data = await r.json();
+    if (!r.ok) {
+      res.textContent = `❌ Error HTTP ${r.status}: ${data.error?.message || 'Error en la API.'}`;
+      return;
+    }
+    const nuevo = JSON.parse(data.candidates?.[0]?.content?.parts?.[0]?.text || '{}');
+    let contV = 0, contT = 0, contE = 0;
+    for (const v of (nuevo.verbos || [])) {
+      const k = v.base.trim().toLowerCase();
+      if (!k) continue;
+      // Si ya está en biblioteca con explicación, no volver a explicar
+      if (bibliotecaIA.verbos[k] && bibliotecaIA.verbos[k].explicacionIA) {
+        continue;
+      }
+      bibliotecaIA.verbos[k] = { p: v.p, t3: v.t3, pas: v.pas, pp: v.pp, g: v.g, es: v.es, aprendida: false };
+      // Asignar tema si se seleccionó
+      const temaId = temaSeleccionado || (nuevoTemaNombre ? crearTema(nuevoTemaNombre, 'Tema') : '');
+      if (temaId) bibliotecaIA.verbos[k].temaId = temaId;
+      bibliotecaIA.ejemplos[k] = { pres1: { en: v.pres1_en, es: v.pres1_es }, pres3: { en: v.pres3_en, es: v.pres3_es }, pas: { en: v.pas_en, es: v.pas_es }, pp: { en: v.pp_en, es: v.pp_es }, g: { en: v.g_en, es: v.g_es } };
+      contV++;
+    }
+    // Si se escribió un nombre de nuevo tema pero no se seleccionó, crearlo
+    let temaIdAsignado = temaSeleccionado;
+    if (nuevoTemaNombre && !temaIdAsignado) {
+      temaIdAsignado = crearTema(nuevoTemaNombre, 'Tema');
+    }
+    for (const t of (nuevo.temas || [])) {
+      const id = t.titulo.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      if (!id) continue;
+      if (!bibliotecaIA.temas[id]) {
+        bibliotecaIA.temas[id] = { ...t, aprendida: false, palabras: [] };
+        contT++;
+      }
+    }
+    for (const e of (nuevo.ejemplosSueltos || [])) {
+      const id = e.titulo.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      if (!id) continue;
+      bibliotecaIA.ejemplosSueltos[id] = { ...e, aprendida: false };
+      contE++;
+    }
+    guardarBiblioteca();
+    poblarListaPalabras();
+    document.getElementById('nuevo-tema').value = '';
+    res.textContent = `✅ ¡Biblioteca actualizada! Se añadieron ${contV} verbo(s), ${contT} tema(s) y ${contE} ejemplo(s) suelto(s) a tu barra lateral (marcados con ✨).`;
+  } catch (err) {
+    res.textContent = `❌ Error al añadir: ${err.message}`;
+  }
+}
+
+function crearTemaDesdeUI() {
+  const nombre = document.getElementById('nuevo-tema')?.value.trim();
+  if (!nombre) { alert('Escribe un nombre para el tema.'); return; }
+  const id = crearTema(nombre, 'Tema');
+  poblarSelectTemas();
+  document.getElementById('nuevo-tema').value = '';
+  document.getElementById('tema-seleccionado').value = id;
+  alert(`Tema "${nombre}" creado.`);
+}
+
+function poblarSelectTemas() {
+  const select = document.getElementById('tema-seleccionado');
+  if (!select) return;
+  const valorActual = select.value;
+  select.innerHTML = '<option value="">-- Sin tema --</option>';
+  for (const id in bibliotecaIA.temas) {
+    const t = bibliotecaIA.temas[id];
+    select.innerHTML += `<option value="${id}">${t.titulo}</option>`;
+  }
+  select.value = valorActual;
+}
+
+const VERBOS = {
+  be: { p: 'am/is/are', t3: 'is', pas: 'was/were', pp: 'been', g: 'being', es: 'ser/estar' },
+  have: { p: 'have/has', t3: 'has', pas: 'had', pp: 'had', g: 'having', es: 'tener' },
+  do: { p: 'do/does', t3: 'does', pas: 'did', pp: 'done', g: 'doing', es: 'hacer' },
+  say: { p: 'say/says', t3: 'says', pas: 'said', pp: 'said', g: 'saying', es: 'decir' },
+  go: { p: 'go/goes', t3: 'goes', pas: 'went', pp: 'gone', g: 'going', es: 'ir' },
+  get: { p: 'get/gets', t3: 'gets', pas: 'got', pp: 'got/gotten', g: 'getting', es: 'obtener/ponerse' },
+  make: { p: 'make/makes', t3: 'makes', pas: 'made', pp: 'made', g: 'making', es: 'hacer/fabricar' },
+  know: { p: 'know/knows', t3: 'knows', pas: 'knew', pp: 'known', g: 'knowing', es: 'saber/conocer' },
+  think: { p: 'think/thinks', t3: 'thinks', pas: 'thought', pp: 'thought', g: 'thinking', es: 'pensar/creer' },
+  take: { p: 'take/takes', t3: 'takes', pas: 'took', pp: 'taken', g: 'taking', es: 'tomar/llevar' },
+  see: { p: 'see/sees', t3: 'sees', pas: 'saw', pp: 'seen', g: 'seeing', es: 'ver' },
+  come: { p: 'come/comes', t3: 'comes', pas: 'came', pp: 'come', g: 'coming', es: 'venir' },
+  want: { p: 'want/wants', t3: 'wants', pas: 'wanted', pp: 'wanted', g: 'wanting', es: 'querer' },
+  look: { p: 'look/looks', t3: 'looks', pas: 'looked', pp: 'looked', g: 'looking', es: 'mirar/parecer' },
+  use: { p: 'use/uses', t3: 'uses', pas: 'used', pp: 'used', g: 'using', es: 'usar' },
+  find: { p: 'find/finds', t3: 'finds', pas: 'found', pp: 'found', g: 'finding', es: 'encontrar' },
+  give: { p: 'give/gives', t3: 'gives', pas: 'gave', pp: 'given', g: 'giving', es: 'dar' },
+  tell: { p: 'tell/tells', t3: 'tells', pas: 'told', pp: 'told', g: 'telling', es: 'decir/contar' },
+  work: { p: 'work/works', t3: 'works', pas: 'worked', pp: 'worked', g: 'working', es: 'trabajar' },
+  call: { p: 'call/calls', t3: 'calls', pas: 'called', pp: 'called', g: 'calling', es: 'llamar' },
+  try: { p: 'try/tries', t3: 'tries', pas: 'tried', pp: 'tried', g: 'trying', es: 'intentar' },
+  ask: { p: 'ask/asks', t3: 'asks', pas: 'asked', pp: 'asked', g: 'asking', es: 'preguntar/pedir' },
+  need: { p: 'need/needs', t3: 'needs', pas: 'needed', pp: 'needed', g: 'needing', es: 'necesitar' },
+  feel: { p: 'feel/feels', t3: 'feels', pas: 'felt', pp: 'felt', g: 'feeling', es: 'sentir/tocar' },
+  become: { p: 'become/becomes', t3: 'becomes', pas: 'became', pp: 'become', g: 'becoming', es: 'volverse/llegar a ser' },
+  leave: { p: 'leave/leaves', t3: 'leaves', pas: 'left', pp: 'left', g: 'leaving', es: 'ir/dejar' },
+  put: { p: 'put/puts', t3: 'puts', pas: 'put', pp: 'put', g: 'putting', es: 'poner' },
+  mean: { p: 'mean/means', t3: 'means', pas: 'meant', pp: 'meant', g: 'meaning', es: 'significar' },
+  keep: { p: 'keep/keeps', t3: 'keeps', pas: 'kept', pp: 'kept', g: 'keeping', es: 'mantener/guardar' },
+  let: { p: 'let/lets', t3: 'lets', pas: 'let', pp: 'let', g: 'letting', es: 'dejar/permitir' },
+  begin: { p: 'begin/begins', t3: 'begins', pas: 'began', pp: 'begun', g: 'beginning', es: 'comenzar' },
+  seem: { p: 'seem/seems', t3: 'seems', pas: 'seemed', pp: 'seemed', g: 'seeming', es: 'parecer' },
+  help: { p: 'help/helps', t3: 'helps', pas: 'helped', pp: 'helped', g: 'helping', es: 'ayudar' },
+  talk: { p: 'talk/talks', t3: 'talks', pas: 'talked', pp: 'talked', g: 'talking', es: 'hablar' },
+  turn: { p: 'turn/turns', t3: 'turns', pas: 'turned', pp: 'turned', g: 'turning', es: 'girar/volverse' },
+  start: { p: 'start/starts', t3: 'starts', pas: 'started', pp: 'started', g: 'starting', es: 'empezar' },
+  show: { p: 'show/shows', t3: 'shows', pas: 'showed', pp: 'showed/shown', g: 'showing', es: 'mostrar' },
+  hear: { p: 'hear/hears', t3: 'hears', pas: 'heard', pp: 'heard', g: 'hearing', es: 'oír' },
+  play: { p: 'play/plays', t3: 'plays', pas: 'played', pp: 'played', g: 'playing', es: 'jugar/tocar instrumento' },
+  run: { p: 'run/runs', t3: 'runs', pas: 'ran', pp: 'run', g: 'running', es: 'correr' },
+  move: { p: 'move/moves', t3: 'moves', pas: 'moved', pp: 'moved', g: 'moving', es: 'mover/mudarse' },
+  live: { p: 'live/lives', t3: 'lives', pas: 'lived', pp: 'lived', g: 'living', es: 'vivir' },
+  believe: { p: 'believe/believes', t3: 'believes', pas: 'believed', pp: 'believed', g: 'believing', es: 'creer' },
+  hold: { p: 'hold/holds', t3: 'holds', pas: 'held', pp: 'held', g: 'holding', es: 'sostener/celebrar' },
+  bring: { p: 'bring/brings', t3: 'brings', pas: 'brought', pp: 'brought', g: 'bringing', es: 'traer' },
+  happen: { p: 'happen/happens', t3: 'happens', pas: 'happened', pp: 'happened', g: 'happening', es: 'suceder' },
+  write: { p: 'write/writes', t3: 'writes', pas: 'wrote', pp: 'written', g: 'writing', es: 'escribir' },
+  sit: { p: 'sit/sits', t3: 'sits', pas: 'sat', pp: 'sat', g: 'sitting', es: 'sentarse' },
+  stand: { p: 'stand/stands', t3: 'stands', pas: 'stood', pp: 'stood', g: 'standing', es: 'estar de pie' },
+  lose: { p: 'lose/loses', t3: 'loses', pas: 'lost', pp: 'lost', g: 'losing', es: 'perder' },
+  set: { p: 'set/sets', t3: 'sets', pas: 'set', pp: 'set', g: 'setting', es: 'colocar/poner' },
+  meet: { p: 'meet/meets', t3: 'meets', pas: 'met', pp: 'met', g: 'meeting', es: 'encontrar/conocer a alguien' },
+  read: { p: 'read/reads', t3: 'reads', pas: 'read', pp: 'read', g: 'reading', es: 'leer' },
+  grow: { p: 'grow/grows', t3: 'grows', pas: 'grew', pp: 'grown', g: 'growing', es: 'crecer/cultivar' },
+  pay: { p: 'pay/pays', t3: 'pays', pas: 'paid', pp: 'paid', g: 'paying', es: 'pagar' },
+  fall: { p: 'fall/falls', t3: 'falls', pas: 'fell', pp: 'fallen', g: 'falling', es: 'caer' },
+  cut: { p: 'cut/cuts', t3: 'cuts', pas: 'cut', pp: 'cut', g: 'cutting', es: 'cortar' },
+  rise: { p: 'rise/rises', t3: 'rises', pas: 'rose', pp: 'risen', g: 'rising', es: 'levantarse/subir' },
+  catch: { p: 'catch/catches', t3: 'catches', pas: 'caught', pp: 'caught', g: 'catching', es: 'atrapar/coger' },
+  teach: { p: 'teach/teaches', t3: 'teaches', pas: 'taught', pp: 'taught', g: 'teaching', es: 'enseñar' },
+  learn: { p: 'learn/learns', t3: 'learns', pas: 'learned/learnt', pp: 'learned/learnt', g: 'learning', es: 'aprender' },
+  prove: { p: 'prove/proves', t3: 'proves', pas: 'proved', pp: 'proved/proven', g: 'proving', es: 'probar/demostrar' },
+  send: { p: 'send/sends', t3: 'sends', pas: 'sent', pp: 'sent', g: 'sending', es: 'enviar' },
+  build: { p: 'build/builds', t3: 'builds', pas: 'built', pp: 'built', g: 'building', es: 'construir' },
+  buy: { p: 'buy/buys', t3: 'buys', pas: 'bought', pp: 'bought', g: 'buying', es: 'comprar' },
+  cost: { p: 'cost/costs', t3: 'costs', pas: 'cost', pp: 'cost', g: 'costing', es: 'costar' },
+  spend: { p: 'spend/spends', t3: 'spends', pas: 'spent', pp: 'spent', g: 'spending', es: 'gastar/pasar tiempo' },
+  wake: { p: 'wake/wakes', t3: 'wakes', pas: 'woke', pp: 'woken', g: 'waking', es: 'despertarse' },
+  break: { p: 'break/breaks', t3: 'breaks', pas: 'broke', pp: 'broken', g: 'breaking', es: 'romper' },
+  choose: { p: 'choose/chooses', t3: 'chooses', pas: 'chose', pp: 'chosen', g: 'choosing', es: 'elegir' },
+  speak: { p: 'speak/speaks', t3: 'speaks', pas: 'spoke', pp: 'spoken', g: 'speaking', es: 'hablar' },
+  wear: { p: 'wear/wears', t3: 'wears', pas: 'wore', pp: 'worn', g: 'wearing', es: 'llevar ropa' },
+  draw: { p: 'draw/draws', t3: 'draws', pas: 'drew', pp: 'drawn', g: 'drawing', es: 'dibujar/sacar' },
+  drive: { p: 'drive/drives', t3: 'drives', pas: 'drove', pp: 'driven', g: 'driving', es: 'conducir' },
+  drink: { p: 'drink/drinks', t3: 'drinks', pas: 'drank', pp: 'drunk', g: 'drinking', es: 'beber' },
+  eat: { p: 'eat/eats', t3: 'eats', pas: 'ate', pp: 'eaten', g: 'eating', es: 'comer' },
+  fight: { p: 'fight/fights', t3: 'fights', pas: 'fought', pp: 'fought', g: 'fighting', es: 'luchar' },
+  forget: { p: 'forget/forgets', t3: 'forgets', pas: 'forgot', pp: 'forgotten', g: 'forgetting', es: 'olvidar' },
+  forgive: { p: 'forgive/forgives', t3: 'forgives', pas: 'forgave', pp: 'forgiven', g: 'forgiving', es: 'perdonar' },
+  hide: { p: 'hide/hides', t3: 'hides', pas: 'hid', pp: 'hidden', g: 'hiding', es: 'esconder' },
+  hit: { p: 'hit/hits', t3: 'hits', pas: 'hit', pp: 'hit', g: 'hitting', es: 'golpear' },
+  hurt: { p: 'hurt/hurts', t3: 'hurts', pas: 'hurt', pp: 'hurt', g: 'hurting', es: 'lastimar/doler' },
+  lay: { p: 'lay/lays', t3: 'lays', pas: 'laid', pp: 'laid', g: 'laying', es: 'poner/colocar algo' },
+  lead: { p: 'lead/leads', t3: 'leads', pas: 'led', pp: 'led', g: 'leading', es: 'liderar/guiar' },
+  lie: { p: 'lie/lies', t3: 'lies', pas: 'lay', pp: 'lain', g: 'lying', es: 'yacer/estar acostado' },
+  light: { p: 'light/lights', t3: 'lights', pas: 'lit/lighted', pp: 'lit/lighted', g: 'lighting', es: 'encender/iluminar' },
+  mistake: { p: 'mistake/mistakes', t3: 'mistakes', pas: 'mistook', pp: 'mistaken', g: 'mistaking', es: 'equivocarse' },
+  overcome: { p: 'overcome/overcomes', t3: 'overcomes', pas: 'overcame', pp: 'overcome', g: 'overcoming', es: 'superar' },
+  quit: { p: 'quit/quits', t3: 'quits', pas: 'quit/quitted', pp: 'quit/quitted', g: 'quitting', es: 'dejar/renunciar' },
+  ring: { p: 'ring/rings', t3: 'rings', pas: 'rang', pp: 'rung', g: 'ringing', es: 'llamar/sonar' },
+  sell: { p: 'sell/sells', t3: 'sells', pas: 'sold', pp: 'sold', g: 'selling', es: 'vender' },
+  shake: { p: 'shake/shakes', t3: 'shakes', pas: 'shook', pp: 'shaken', g: 'shaking', es: 'sacudir/estrechar la mano' },
+  shine: { p: 'shine/shines', t3: 'shines', pas: 'shone/shined', pp: 'shone/shined', g: 'shining', es: 'brillar' },
+  shoot: { p: 'shoot/shoots', t3: 'shoots', pas: 'shot', pp: 'shot', g: 'shooting', es: 'disparar/filmar' },
+  shut: { p: 'shut/shuts', t3: 'shuts', pas: 'shut', pp: 'shut', g: 'shutting', es: 'cerrar' },
+  sing: { p: 'sing/sings', t3: 'sings', pas: 'sang', pp: 'sung', g: 'singing', es: 'cantar' },
+  sink: { p: 'sink/sinks', t3: 'sinks', pas: 'sank', pp: 'sunk', g: 'sinking', es: 'hundirse' },
+  sleep: { p: 'sleep/sleeps', t3: 'sleeps', pas: 'slept', pp: 'slept', g: 'sleeping', es: 'dormir' },
+  slide: { p: 'slide/slides', t3: 'slides', pas: 'slid', pp: 'slid', g: 'sliding', es: 'deslizarse' },
+  spread: { p: 'spread/spreads', t3: 'spreads', pas: 'spread', pp: 'spread', g: 'spreading', es: 'extender/propagar' },
+  steal: { p: 'steal/steals', t3: 'steals', pas: 'stole', pp: 'stolen', g: 'stealing', es: 'robar' },
+  stick: { p: 'stick/sticks', t3: 'sticks', pas: 'stuck', pp: 'stuck', g: 'sticking', es: 'pegar/clavar' },
+  strike: { p: 'strike/strikes', t3: 'strikes', pas: 'struck', pp: 'struck', g: 'striking', es: 'golpear/atacar' },
+  swear: { p: 'swear/swears', t3: 'swears', pas: 'swore', pp: 'sworn', g: 'swearing', es: 'jurar/maldir' },
+  sweep: { p: 'sweep/sweeps', t3: 'sweeps', pas: 'swept', pp: 'swept', g: 'sweeping', es: 'barrer' },
+  swim: { p: 'swim/swims', t3: 'swims', pas: 'swam', pp: 'swum', g: 'swimming', es: 'nadar' },
+  throw: { p: 'throw/throws', t3: 'throws', pas: 'threw', pp: 'thrown', g: 'throwing', es: 'lanzar' },
+  understand: { p: 'understand/understands', t3: 'understands', pas: 'understood', pp: 'understood', g: 'understanding', es: 'entender' },
+  win: { p: 'win/wins', t3: 'wins', pas: 'won', pp: 'won', g: 'winning', es: 'ganar' },
+  hang: { p: 'hang/hangs', t3: 'hangs', pas: 'hung/hanged', pp: 'hung/hanged', g: 'hanging', es: 'colgar' },
+  dig: { p: 'dig/digs', t3: 'digs', pas: 'dug', pp: 'dug', g: 'digging', es: 'cavar' },
+  feed: { p: 'feed/feeds', t3: 'feeds', pas: 'fed', pp: 'fed', g: 'feeding', es: 'alimentar' },
+  fly: { p: 'fly/flies', t3: 'flies', pas: 'flew', pp: 'flown', g: 'flying', es: 'volar' },
+  forbid: { p: 'forbid/forbids', t3: 'forbids', pas: 'forbade', pp: 'forbidden', g: 'forbidding', es: 'prohibir' },
+  freeze: { p: 'freeze/freezes', t3: 'freezes', pas: 'froze', pp: 'frozen', g: 'freezing', es: 'congelar' },
+  grind: { p: 'grind/grinds', t3: 'grinds', pas: 'ground', pp: 'ground', g: 'grinding', es: 'moler' },
+  kneel: { p: 'kneel/kneels', t3: 'kneels', pas: 'knelt/kneeled', pp: 'knelt/kneeled', g: 'kneeling', es: 'arrodillarse' },
+  lean: { p: 'lean/leans', t3: 'leans', pas: 'leaned/leant', pp: 'leaned/leant', g: 'leaning', es: 'inclinarse/apoyarse' },
+  leap: { p: 'leap/leaps', t3: 'leaps', pas: 'leaped/leapt', pp: 'leaped/leapt', g: 'leaping', es: 'saltar' },
+  walk: { p: 'walk/walks', t3: 'walks', pas: 'walked', pp: 'walked', g: 'walking', es: 'caminar' },
+  enter: { p: 'enter/enters', t3: 'enters', pas: 'entered', pp: 'entered', g: 'entering', es: 'entrar' },
+  climb: { p: 'climb/climbs', t3: 'climbs', pas: 'climbed', pp: 'climbed', g: 'climbing', es: 'subir/escalar' },
+};
+
+const EJEMPLOS = {
+  be: {
+    pres1: { en: 'I am a student.', es: 'Soy un estudiante.' },
+    pres3: { en: 'She is happy.', es: 'Ella está feliz.' },
+    pas: { en: 'She was tired yesterday.', es: 'Ella estaba cansada ayer.' },
+    pp: { en: 'I have been to Paris.', es: 'He estado en París.' },
+    g: { en: 'He is being kind.', es: 'Él está siendo amable.' }
+  },
+  have: {
+    pres1: { en: 'I have a car.', es: 'Tengo un coche.' },
+    pres3: { en: 'He has two dogs.', es: 'Él tiene dos perros.' },
+    pas: { en: 'We had pizza last night.', es: 'Cenamos pizza anoche.' },
+    pp: { en: 'She has had that car for years.', es: 'Ella ha tenido ese coche durante años.' },
+    g: { en: 'I am having lunch.', es: 'Estoy almorzando.' }
+  },
+  do: {
+    pres1: { en: 'I do my homework.', es: 'Hago mi tarea.' },
+    pres3: { en: 'She does exercise.', es: 'Ella hace ejercicio.' },
+    pas: { en: 'He did the dishes.', es: 'Él lavó los platos.' },
+    pp: { en: 'Have you done your work?', es: '¿Has hecho tu trabajo?' },
+    g: { en: 'She is doing yoga.', es: 'Ella está haciendo yoga.' }
+  },
+  go: {
+    pres1: { en: 'I go to school.', es: 'Voy a la escuela.' },
+    pres3: { en: 'He goes home.', es: 'Él va a casa.' },
+    pas: { en: 'We went to the beach.', es: 'Fuimos a la playa.' },
+    pp: { en: 'She has gone home.', es: 'Ella se ha ido a casa.' },
+    g: { en: 'They are going to travel.', es: 'Ellos van a viajar.' }
+  },
+  get: {
+    pres1: { en: 'I get up early.', es: 'Me levanto temprano.' },
+    pres3: { en: 'She gets a gift.', es: 'Ella recibe un regalo.' },
+    pas: { en: 'He got a nice gift.', es: 'Él recibió un buen regalo.' },
+    pp: { en: 'She has gotten good results.', es: 'Ella ha obtenido buenos resultados.' },
+    g: { en: 'It is getting colder.', es: 'Está haciendo más frío.' }
+  },
+  make: {
+    pres1: { en: 'I make coffee.', es: 'Hago café.' },
+    pres3: { en: 'He makes pizza.', es: 'Él hace pizza.' },
+    pas: { en: 'She made dinner.', es: 'Ella hizo la cena.' },
+    pp: { en: 'I have made a decision.', es: 'He tomado una decisión.' },
+    g: { en: 'He is making a call.', es: 'Está haciendo una llamada.' }
+  },
+  know: {
+    pres1: { en: 'I know the answer.', es: 'Conozco la respuesta.' },
+    pres3: { en: 'She knows him.', es: 'Ella lo conoce.' },
+    pas: { en: 'She knew him in college.', es: 'Ella lo conoció en la universidad.' },
+    pp: { en: 'I have known her for years.', es: 'La conozco desde hace años.' },
+    g: { en: 'He is knowing the truth.', es: 'Él está conociendo la verdad.' }
+  },
+  think: {
+    pres1: { en: 'I think so.', es: 'Lo creo así.' },
+    pres3: { en: 'He thinks it is easy.', es: 'Él cree que es fácil.' },
+    pas: { en: 'She thought about it.', es: 'Ella pensó en ello.' },
+    pp: { en: 'I have thought about you.', es: 'He pensado en ti.' },
+    g: { en: 'He is thinking of moving.', es: 'Está pensando en mudarse.' }
+  },
+  take: {
+    pres1: { en: 'I take a bus.', es: 'Tomo un autobús.' },
+    pres3: { en: 'She takes a photo.', es: 'Ella toma una foto.' },
+    pas: { en: 'He took the train.', es: 'Él tomó el tren.' },
+    pp: { en: 'I have taken many photos.', es: 'He tomado muchas fotos.' },
+    g: { en: 'She is taking a nap.', es: 'Está tomando una siesta.' }
+  },
+  see: {
+    pres1: { en: 'I see you.', es: 'Te veo.' },
+    pres3: { en: 'He sees a bird.', es: 'Él ve un pájaro.' },
+    pas: { en: 'We saw a movie.', es: 'Vimos una película.' },
+    pp: { en: 'Have you seen my keys?', es: '¿Has visto mis llaves?' },
+    g: { en: 'The doctor is seeing a patient.', es: 'El médico está atendiendo a un paciente.' }
+  },
+  come: {
+    pres1: { en: 'I come here.', es: 'Vengo aquí.' },
+    pres3: { en: 'They come at 5.', es: 'Ellos vienen a las 5.' },
+    pas: { en: 'She came late.', es: 'Ella llegó tarde.' },
+    pp: { en: 'They have come from far.', es: 'Han venido de lejos.' },
+    g: { en: 'Winter is coming soon.', es: 'El invierno se acerca pronto.' }
+  },
+  want: {
+    pres1: { en: 'I want water.', es: 'Quiero agua.' },
+    pres3: { en: 'She wants a cat.', es: 'Ella quiere un gato.' },
+    pas: { en: 'She wanted to help.', es: 'Ella quería ayudar.' },
+    pp: { en: 'I have wanted this for years.', es: 'He querido esto durante años.' },
+    g: { en: 'He is wanting attention.', es: 'Está buscando atención.' }
+  },
+  look: {
+    pres1: { en: 'I look at you.', es: 'Te miro.' },
+    pres3: { en: 'He looks tired.', es: 'Él se ve cansado.' },
+    pas: { en: 'He looked at me.', es: 'Él me miró.' },
+    pp: { en: 'I have looked everywhere.', es: 'He buscado en todas partes.' },
+    g: { en: 'She is looking for keys.', es: 'Está buscando las llaves.' }
+  },
+  use: {
+    pres1: { en: 'I use a phone.', es: 'Uso un teléfono.' },
+    pres3: { en: 'She uses a bike.', es: 'Ella usa una bicicleta.' },
+    pas: { en: 'She used my computer.', es: 'Ella usó mi computadora.' },
+    pp: { en: 'I have used that app.', es: 'He usado esa aplicación.' },
+    g: { en: 'He is using the phone.', es: 'Está usando el teléfono.' }
+  },
+  find: {
+    pres1: { en: 'I find my keys.', es: 'Encuentro mis llaves.' },
+    pres3: { en: 'He finds a way.', es: 'Él encuentra un camino.' },
+    pas: { en: 'They found the dog.', es: 'Encontraron al perro.' },
+    pp: { en: 'I have found it.', es: 'Lo he encontrado.' },
+    g: { en: 'She is finding solutions.', es: 'Está encontrando soluciones.' }
+  },
+  give: {
+    pres1: { en: 'I give a book.', es: 'Doy un libro.' },
+    pres3: { en: 'She gives love.', es: 'Ella da amor.' },
+    pas: { en: 'She gave him a present.', es: 'Ella le dio un regalo.' },
+    pp: { en: 'I have given you my answer.', es: 'Te he dado mi respuesta.' },
+    g: { en: 'He is giving a speech.', es: 'Está dando un discurso.' }
+  },
+  tell: {
+    pres1: { en: 'I tell a story.', es: 'Cuento una historia.' },
+    pres3: { en: 'He tells the truth.', es: 'Él dice la verdad.' },
+    pas: { en: 'She told me.', es: 'Ella me dijo.' },
+    pp: { en: 'I have told him.', es: 'Le he dicho.' },
+    g: { en: 'He is telling a joke.', es: 'Está contando un chiste.' }
+  },
+  work: {
+    pres1: { en: 'I work here.', es: 'Trabajo aquí.' },
+    pres3: { en: 'She works hard.', es: 'Ella trabaja duro.' },
+    pas: { en: 'She worked all weekend.', es: 'Ella trabajó todo el fin de semana.' },
+    pp: { en: 'I have worked here 5 years.', es: 'He trabajado aquí 5 años.' },
+    g: { en: 'He is working from home.', es: 'Está trabajando desde casa.' }
+  },
+  call: {
+    pres1: { en: 'I call you.', es: 'Te llamo.' },
+    pres3: { en: 'He calls me.', es: 'Él me llama.' },
+    pas: { en: 'She called me.', es: 'Ella me llamó.' },
+    pp: { en: 'I have called him.', es: 'Le he llamado.' },
+    g: { en: 'The phone is calling.', es: 'El teléfono está llamando.' }
+  },
+  try: {
+    pres1: { en: 'I try again.', es: 'Lo intento de nuevo.' },
+    pres3: { en: 'She tries hard.', es: 'Ella se esfuerza.' },
+    pas: { en: 'I tried to call.', es: 'Intenté llamar.' },
+    pp: { en: 'Have you tried this?', es: '¿Has probado esto?' },
+    g: { en: 'She is trying her best.', es: 'Está dando lo mejor de sí.' }
+  },
+  ask: {
+    pres1: { en: 'I ask a question.', es: 'Hago una pregunta.' },
+    pres3: { en: 'He asks for help.', es: 'Él pide ayuda.' },
+    pas: { en: 'She asked me.', es: 'Ella me preguntó.' },
+    pp: { en: 'I have asked them.', es: 'Les he preguntado.' },
+    g: { en: 'He is asking questions.', es: 'Está haciendo preguntas.' }
+  },
+  need: {
+    pres1: { en: 'I need help.', es: 'Necesito ayuda.' },
+    pres3: { en: 'She needs time.', es: 'Ella necesita tiempo.' },
+    pas: { en: 'We needed more time.', es: 'Necesitábamos más tiempo.' },
+    pp: { en: 'I have needed this.', es: 'He necesitado esto.' },
+    g: { en: 'She is needing rest.', es: 'Está necesitando descanso.' }
+  },
+  feel: {
+    pres1: { en: 'I feel fine.', es: 'Me siento bien.' },
+    pres3: { en: 'He feels cold.', es: 'Él siente frío.' },
+    pas: { en: 'She felt sad.', es: 'Ella se sintió triste.' },
+    pp: { en: 'I have felt this before.', es: 'He sentido esto antes.' },
+    g: { en: 'He is feeling better.', es: 'Se siente mejor.' }
+  },
+  become: {
+    pres1: { en: 'I become a teacher.', es: 'Me vuelvo profesor.' },
+    pres3: { en: 'She becomes angry.', es: 'Ella se enoja.' },
+    pas: { en: 'He became a doctor.', es: 'Él se convirtió en médico.' },
+    pp: { en: 'I have become stronger.', es: 'Me he vuelto más fuerte.' },
+    g: { en: 'It is becoming clear.', es: 'Se está volviendo claro.' }
+  },
+  leave: {
+    pres1: { en: 'I leave now.', es: 'Me voy ahora.' },
+    pres3: { en: 'He leaves at 6.', es: 'Él se va a las 6.' },
+    pas: { en: 'He left early.', es: 'Se fue temprano.' },
+    pp: { en: 'She has left.', es: 'Ella se ha ido.' },
+    g: { en: 'The train is leaving.', es: 'El tren está saliendo.' }
+  },
+  put: {
+    pres1: { en: 'I put it here.', es: 'Lo pongo aquí.' },
+    pres3: { en: 'She puts it there.', es: 'Ella lo pone allí.' },
+    pas: { en: 'She put the keys here.', es: 'Ella puso las llaves aquí.' },
+    pp: { en: 'I have put it in the drawer.', es: 'Lo he puesto en el cajón.' },
+    g: { en: 'He is putting on shoes.', es: 'Se está poniendo los zapatos.' }
+  },
+  mean: {
+    pres1: { en: 'I mean it.', es: 'Lo digo en serio.' },
+    pres3: { en: 'He means well.', es: 'Él tiene buenas intenciones.' },
+    pas: { en: 'She meant to say.', es: 'Ella quiso decir.' },
+    pp: { en: 'I have meant to call.', es: 'He querido llamar.' },
+    g: { en: 'He is meaning something.', es: 'Está queriendo decir algo.' }
+  },
+  keep: {
+    pres1: { en: 'I keep it.', es: 'Lo guardo.' },
+    pres3: { en: 'She keeps calm.', es: 'Ella se mantiene tranquila.' },
+    pas: { en: 'They kept quiet.', es: 'Se mantuvieron callados.' },
+    pp: { en: 'I have kept it safe.', es: 'Lo he mantenido a salvo.' },
+    g: { en: 'He is keeping it.', es: 'Está manteniéndolo.' }
+  },
+  let: {
+    pres1: { en: 'I let him go.', es: 'Dejo que se vaya.' },
+    pres3: { en: 'She lets me in.', es: 'Ella me deja entrar.' },
+    pas: { en: 'She let me go.', es: 'Ella me dejó ir.' },
+    pp: { en: 'I have let them in.', es: 'Los he dejado entrar.' },
+    g: { en: 'He is letting it happen.', es: 'Está dejando que pase.' }
+  },
+  walk: {
+    pres1: { en: 'I walk to school.', es: 'Camino a la escuela.' },
+    pres3: { en: 'She walks every day.', es: 'Ella camina todos los días.' },
+    pas: { en: 'We walked around.', es: 'Caminamos alrededor.' },
+    pp: { en: 'I have walked this path.', es: 'He caminado este camino.' },
+    g: { en: 'They are walking on the beach.', es: 'Están caminando en la playa.' }
+  },
+  enter: {
+    pres1: { en: 'I enter the room.', es: 'Entro a la habitación.' },
+    pres3: { en: 'He enters quietly.', es: 'Él entra silenciosamente.' },
+    pas: { en: 'She entered the room.', es: 'Ella entró a la habitación.' },
+    pp: { en: 'He has entered the contest.', es: 'Ha entrado al concurso.' },
+    g: { en: 'Guests are entering the hall.', es: 'Los invitados están entrando al salón.' }
+  },
+  climb: {
+    pres1: { en: 'I climb the stairs.', es: 'Subo las escaleras.' },
+    pres3: { en: 'He climbs mountains.', es: 'Él escala montañas.' },
+    pas: { en: 'We climbed the mountain.', es: 'Escalamos la montaña.' },
+    pp: { en: 'They have climbed this before.', es: 'Han escalado esto antes.' },
+    g: { en: 'He is climbing the ladder.', es: 'Está escalando la escalera.' }
+  }
+};
+
+let apiKeyGemini = null;
+try { apiKeyGemini = localStorage.getItem('gemini_api_key'); } catch (e) {}
+
+window.addEventListener('DOMContentLoaded', () => {
+  inicializarTemasBaseYReferencias();
+  poblarListaPalabras();
+  poblarSelectTemas();
+  if (apiKeyGemini) document.getElementById('api-key').value = apiKeyGemini;
+  const f = document.getElementById('frase');
+  const v = document.getElementById('verbo');
+  if (f) f.addEventListener('keydown', e => { if (e.key === 'Enter') hablarFrase(); });
+  if (v) v.addEventListener('keydown', e => { if (e.key === 'Enter') buscarVerbo(); });
+});
+
+function obtenerClave() {
+  const keyInput = document.getElementById('api-key').value.trim();
+  const key = keyInput || apiKeyGemini;
+  if (key) {
+    apiKeyGemini = key;
+    try { localStorage.setItem('gemini_api_key', key); } catch (e) {}
+  }
+  return key;
+}
+
+function guardarApiKey() {
+  const key = document.getElementById('api-key').value.trim();
+  if (!key) { alert('Pega tu API Key primero.'); return; }
+  apiKeyGemini = key;
+  try { localStorage.setItem('gemini_api_key', key); } catch (e) {}
+  alert('API Key guardada.');
+}
+
+function limpiarIA() {
+  document.getElementById('prompt-ia').value = '';
+  document.getElementById('respuesta-ia').style.display = 'none';
+  document.getElementById('respuesta-ia').textContent = '';
+}
+
+async function probarConexionGemini() {
+  const key = obtenerClave();
+  const res = document.getElementById('respuesta-ia');
+  if (!key) { alert('Primero pega tu API Key de Google AI Studio (empieza por AIza...).'); return; }
+  res.style.display = 'block';
+  res.textContent = '⏳ Probando conexión con Gemini...';
+  try {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`);
+    const data = await r.json();
+    if (!r.ok) {
+      res.textContent = `❌ Error HTTP ${r.status}: ${data.error?.message || 'Clave inválida o sin permisos.'}`;
+      return;
+    }
+    const modelos = (data.models || []).filter(m => (m.supportedGenerationMethods || []).includes('generateContent')).map(m => m.name.replace('models/', '')).slice(0, 10);
+    res.textContent = '✅ ¡Conexión correcta! Modelos disponibles: ' + modelos.join(', ');
+  } catch (err) {
+    res.textContent = `❌ Error de red/CORS (${err.message}). Si abriste el HTML haciendo doble clic (file://), ábrelo con un servidor local (Live Server en VS Code o python -m http.server).`;
+  }
+}
+
+function limpiarMarkdown(texto) {
+  return texto
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/__(.*?)__/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/_(.*?)_/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^[\*\-\+]\s+/gm, '')
+    .replace(/^\s*-\s+/gm, '')
+    .replace(/[ \t]+$/gm, '')
+    .trim();
+}
+
+async function enviarAGemini() {
+  const texto = document.getElementById('prompt-ia').value.trim();
+  const res = document.getElementById('respuesta-ia');
+  const modelo = document.getElementById('modelo-ia').value.trim() || 'gemini-2.5-flash';
+  const key = obtenerClave();
+  if (!texto) { alert('Escribe algo para enviarle a Gemini.'); return; }
+  if (!key) { alert('Primero introduce tu API Key de Google AI Studio.'); return; }
+  res.style.display = 'block';
+  res.textContent = '⏳ Esperando respuesta de Gemini...';
+  const prompt = `Eres un tutor experto de inglés para hispanohablantes. El usuario está estudiando inglés y quiere comprender mejor el siguiente tema o palabra. Responde SIEMPRE en español de forma clara, educativa y alentadora. Explica el concepto, las conjugaciones (si aplica) y los ejemplos con su traducción al español. Da consejos prácticos para usar correctamente lo aprendido. Contexto: ${texto}`;
+  try {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelo)}:generateContent?key=${encodeURIComponent(key)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const data = await r.json();
+    if (!r.ok) {
+      res.textContent = `❌ Error HTTP ${r.status}: ${data.error?.message || 'Revisa tu API Key o el nombre del modelo.'}`;
+      return;
+    }
+    const respuesta = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const respuestaLimpia = limpiarMarkdown(respuesta) || '❌ No se obtuvo texto en la respuesta.';
+    res.textContent = respuestaLimpia;
+    
+    
+    if (hablarAutoIA) {
+      hablarFraseIA();
+    }
+  } catch (err) {
+    res.textContent = `❌ Error de conexión: ${err.message}. Prueba abrir el HTML mediante un servidor local (localhost).`;
+  }
+}
+
+function hablarFraseIA() {
+  const res = document.getElementById('respuesta-ia');
+  const texto = (res.innerText || res.textContent || '').trim();
+  if (!texto || texto.startsWith('⏳') || texto.startsWith('❌')) return;
+  detenerVoz();
+  const u = new SpeechSynthesisUtterance(texto);
+  u.lang = 'es-ES';
+  u.rate = 0.95;
+  vozActual = u;
+  speechSynthesis.speak(u);
+}
+
+function normalizarId(texto) {
+  return String(texto || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '') || ('item_' + Date.now());
+}
+
+function normalizarTextoComparacion(texto) {
+  return String(texto || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function escHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function limpiarArrayTemas(arr) {
+  const res = [];
+  for (const id of (Array.isArray(arr) ? arr : [])) {
+    if (id && bibliotecaIA.temas[id] && !res.includes(id)) res.push(id);
+  }
+  return res;
+}
+
+function deduplicarEjemplos(lista) {
+  const vistos = new Set();
+  const out = [];
+  for (const item of (Array.isArray(lista) ? lista : [])) {
+    if (!item || !item.en || !item.es) continue;
+    const en = String(item.en).trim();
+    const es = String(item.es).trim();
+    const ctx = String(item.ctx || item.contexto || '💬 Ejemplo de uso').trim();
+    const key = en.toLowerCase();
+    if (!en || !es || vistos.has(key)) continue;
+    vistos.add(key);
+    out.push({ ctx, en, es });
+  }
+  return out;
+}
+
+function crearOActualizarTema(titulo, datosExtra = {}) {
+  const limpio = String(titulo || '').trim();
+  if (!limpio) return '';
+  const norm = normalizarTextoComparacion(limpio);
+
+  for (const id in bibliotecaIA.temas) {
+    if (normalizarTextoComparacion(bibliotecaIA.temas[id].titulo) === norm) {
+      const actual = bibliotecaIA.temas[id];
+      bibliotecaIA.temas[id] = {
+        ...actual,
+        tipo: datosExtra.tipo || actual.tipo || 'Tema',
+        es: datosExtra.es || actual.es || '',
+        explicacion: datosExtra.explicacion || actual.explicacion || '',
+        ejemplos: deduplicarEjemplos([...(actual.ejemplos || []), ...(datosExtra.ejemplos || [])]),
+        titulo: actual.titulo
+      };
+      return id;
+    }
+  }
+
+  const id = normalizarId(limpio);
+  bibliotecaIA.temas[id] = {
+    titulo: limpio,
+    tipo: datosExtra.tipo || 'Tema',
+    es: datosExtra.es || '',
+    explicacion: datosExtra.explicacion || '',
+    ejemplos: deduplicarEjemplos(datosExtra.ejemplos || []),
+    aprendida: false
+  };
+  return id;
+}
+
+function inicializarTemasBaseYReferencias() {
+  const DEFAULT_TEMAS_META = {
+    "Verbos Básicos": { tipo: "Gramática y Frecuencia", es: "Los verbos más esenciales y frecuentes del inglés cotidiano." },
+    "Verbos Irregulares": { tipo: "Gramática", es: "Verbos cuyo pasado simple y participio no siguen la regla estándar -ed." },
+    "Verbos Regulares": { tipo: "Gramática", es: "Verbos cuyo pasado simple y participio se forman añadiendo -ed." },
+    "Verbos de Estado (Stative)": { tipo: "Gramática", es: "Verbos de estado mental, posesión o percepción que por regla general no usan forma continua (-ing)." },
+    "Gramática Esencial": { tipo: "Gramática", es: "Verbos auxiliares y pilares estructurales del inglés (be, have, do)." },
+    "Acciones Cotidianas": { tipo: "Uso y Contexto", es: "Acciones habituales de la vida diaria." },
+    "Movimiento y Viajes": { tipo: "Uso y Contexto", es: "Desplazamientos, postura, dirección, transporte y viajes." },
+    "Comunicación": { tipo: "Uso y Contexto", es: "Hablar, preguntar, escuchar, escribir, leer y expresar ideas." },
+    "Mente, Ideas y Sentimientos": { tipo: "Uso y Contexto", es: "Pensamiento, memoria, emociones, aprendizaje y comprensión." },
+    "Trabajo, Dinero y Creación": { tipo: "Uso y Contexto", es: "Trabajo, comercio, pagos, liderazgo y creación." },
+    "Hogar y Objetos": { tipo: "Uso y Contexto", es: "Manejo de objetos, limpieza, orden y tareas del hogar." },
+    "Naturaleza y Física": { tipo: "Uso y Contexto", es: "Fenómenos naturales, clima, plantas, luz y cambios físicos." }
+  };
+  const mapaTituloAId = {};
+  for (const titulo in DEFAULT_TEMAS_META) {
+    const meta = DEFAULT_TEMAS_META[titulo];
+    mapaTituloAId[titulo] = crearOActualizarTema(titulo, { tipo: meta.tipo, es: meta.es });
+  }
+
+  const DEFAULT_VERB_THEMES = {
+    be: [0,1], have: [0,1], do: [0,1], say: [0,1], go: [0,1], get: [0,1], make: [0,1],
+    know: [0,1,8], think: [0,1,8], take: [0,1,5], see: [0,1,8], come: [0,1,6],
+    want: [0,2,3,8], look: [0,2,5], use: [0,2,5], find: [0,1,5], give: [0,1,5],
+    tell: [0,1,7], work: [0,2,9], call: [0,2,7], try: [0,2,5], ask: [0,2,7],
+    need: [0,2,3,5], feel: [0,1,8], become: [1,5], leave: [0,1,6], put: [0,1,10],
+    mean: [1,3,7], keep: [0,1,10], let: [0,1,7], begin: [1,5], seem: [2,3,8],
+    help: [0,2,5], talk: [0,2,7], turn: [2,6], start: [0,2,5], show: [1,7],
+    hear: [1,7], play: [0,2,5], run: [0,1,6], move: [2,6], live: [0,2,5],
+    believe: [2,3,8], hold: [1,10], bring: [1,6,10], happen: [2,5], write: [0,1,7,9],
+    sit: [1,10], stand: [1,10], lose: [1,5], set: [1,10,9], meet: [1,7,9],
+    read: [0,1,7], grow: [1,11], pay: [1,9], fall: [1,6,11], cut: [1,10],
+    rise: [1,6,11], catch: [1,5,6], teach: [1,7,9], learn: [0,1,8],
+    prove: [1,8], send: [1,7,9], build: [1,9], buy: [0,1,9], cost: [1,3,9],
+    spend: [1,9,5], wake: [1,5], break: [1,10], choose: [1,8],
+    speak: [0,1,7], wear: [1,5,10], draw: [1,9], drive: [1,6],
+    drink: [0,1,5], eat: [0,1,5], fight: [1,5], forget: [1,8],
+    forgive: [1,8], hide: [1,10], hit: [1,5], hurt: [1,8],
+    lay: [1,10], lead: [1,9], lie: [1,10], light: [1,10,11],
+    mistake: [1,8], overcome: [1,8], quit: [1,9], ring: [1,7,10],
+    sell: [1,9], shake: [1,5], shine: [1,11], shoot: [1,9],
+    shut: [1,10], sing: [1,7], sink: [1,11], sleep: [0,1,5],
+    slide: [1,6], spread: [1,10,11], steal: [1,5], stick: [1,10],
+    strike: [1,9,11], swear: [1,7], sweep: [1,10], swim: [1,6,11],
+    throw: [1,5], understand: [0,1,3,8], win: [1,5], hang: [1,10],
+    dig: [1,11], feed: [1,10,5], fly: [1,6,11], forbid: [1,7],
+    freeze: [1,11], grind: [1,10], kneel: [1,6], lean: [1,6],
+    leap: [1,6], walk: [0,2,6], enter: [2,6], climb: [2,6,11]
+  };
+
+  const BASE_THEME_NAMES = Object.keys(DEFAULT_TEMAS_META);
+
+  for (const k in VERBOS) {
+    const custom = bibliotecaIA.verbos[k] || {};
+    const actuales = limpiarArrayTemas(custom.temaIds);
+    if (actuales.length === 0 && !custom._sinTemaManual) {
+      const defaults = (DEFAULT_VERB_THEMES[k] || [0]).map(i => BASE_THEME_NAMES[i]).map(t => mapaTituloAId[t]).filter(Boolean);
+      bibliotecaIA.verbos[k] = { ...custom, temaIds: defaults };
+    } else if (bibliotecaIA.verbos[k]) {
+      bibliotecaIA.verbos[k].temaIds = actuales;
+    }
+  }
+}
+
+function quitarDeTema(tipoItem, id, temaId) {
+  if (tipoItem === 'verbo') {
+    const cur = bibliotecaIA.verbos[id] || {};
+    const arr = limpiarArrayTemas(cur.temaIds).filter(t => t !== temaId);
+    bibliotecaIA.verbos[id] = { ...cur, temaIds: arr };
+    if (arr.length === 0) bibliotecaIA.verbos[id]._sinTemaManual = true;
+  } else if (tipoItem === 'palabra' && bibliotecaIA.palabras[id]) {
+    const arr = limpiarArrayTemas(bibliotecaIA.palabras[id].temaIds).filter(t => t !== temaId);
+    bibliotecaIA.palabras[id].temaIds = arr;
+    if (arr.length === 0) bibliotecaIA.palabras[id]._sinTemaManual = true;
+  } else if (tipoItem === 'ejemplo' && bibliotecaIA.ejemplosSueltos[id]) {
+    const arr = limpiarArrayTemas(bibliotecaIA.ejemplosSueltos[id].temaIds).filter(t => t !== temaId);
+    bibliotecaIA.ejemplosSueltos[id].temaIds = arr;
+    if (arr.length === 0) bibliotecaIA.ejemplosSueltos[id]._sinTemaManual = true;
+  }
+  guardarBiblioteca();
+  poblarListaPalabras();
+  refrescarVistaActual(tipoItem, id);
+}
+
+function refrescarVistaActual(tipoItem, id) {
+  if (tipoItem === 'verbo') mostrarVerbo(id, false);
+  else if (tipoItem === 'palabra') mostrarPalabraSuelta(id);
+  else if (tipoItem === 'ejemplo') mostrarEjemploSuelto(id);
+}
+
+function obtenerTodosLosItems() {
+  const items = [];
+  const clavesVerbos = new Set([...Object.keys(VERBOS), ...Object.keys(bibliotecaIA.verbos)]);
+  for (const k of clavesVerbos) {
+    const v = obtenerVerbo(k);
+    if (!v) continue;
+    items.push({
+      tipoItem: 'verbo',
+      id: k,
+      titulo: k,
+      sub: v.es || '',
+      temaIds: v.temaIds,
+      aprendida: !!v.aprendida,
+      esIA: !VERBOS[k] || !!v.notaProfesional || (v.ejemplosExtra && v.ejemplosExtra.length > 0),
+      speak: k
+    });
+  }
+  for (const id in bibliotecaIA.palabras) {
+    const p = bibliotecaIA.palabras[id];
+    items.push({
+      tipoItem: 'palabra',
+      id,
+      titulo: p.palabra,
+      sub: (p.categoria ? '[' + p.categoria + '] ' : '') + (p.es || ''),
+      temaIds: limpiarArrayTemas(p.temaIds),
+      aprendida: !!p.aprendida,
+      esIA: true,
+      speak: p.palabra
+    });
+  }
+  for (const id in bibliotecaIA.ejemplosSueltos) {
+    const e = bibliotecaIA.ejemplosSueltos[id];
+    items.push({
+      tipoItem: 'ejemplo',
+      id,
+      titulo: e.titulo || e.en || id,
+      sub: e.es || '',
+      temaIds: limpiarArrayTemas(e.temaIds),
+      aprendida: !!e.aprendida,
+      esIA: true,
+      speak: e.ejemploPrincipal || e.en || e.titulo
+    });
+  }
+  return items;
+}
+
+function obtenerElementosDeTema(temaId) {
+  return obtenerTodosLosItems().filter(item => item.temaIds.includes(temaId))
+    .sort((a, b) => a.titulo.localeCompare(b.titulo));
+}
+
+function renderItemSidebar(item) {
+  const iconoTipo = item.tipoItem === 'verbo' ? '⚡' : (item.tipoItem === 'palabra' ? '🏷️' : '💬');
+  const marca = item.esIA ? '✨ ' : '';
+  const check = item.aprendida ? '✅' : '⬜';
+  const speakText = item.speak || item.titulo;
+  const badgeCruce = item.temaIds.length > 1 ? '<span title="En ' + item.temaIds.length + ' temas (referencia cruzada)" style="font-size:10px; color:#5b3cc4;">🔗' + item.temaIds.length + '</span>' : '';
+
+  return '<div class="palabra-item" onclick="abrirElemento(\'' + escHtml(item.tipoItem) + '\', \'' + escHtml(item.id) + '\')">' +
+    '<span class="aprendida-btn" title="Marcar como aprendida" onclick="event.stopPropagation(); toggleAprendida(\'' + escHtml(item.tipoItem) + '\', \'' + escHtml(item.id) + '\')">' + check + '</span>' +
+    '<div class="palabra-info">' +
+    '<div class="palabra-nombre">' + iconoTipo + ' ' + marca + escHtml(item.titulo) + ' ' + badgeCruce + '</div>' +
+    '<div class="palabra-trad">' + escHtml(item.sub) + '</div>' +
+    '</div>' +
+    '<button class="palabra-escuchar" data-speak="' + escHtml(speakText) + '" data-lang="en-US" onclick="event.stopPropagation(); hablarDesdeBoton(this)">🔊</button>' +
+    '</div>';
+}
+
+function mostrarPalabraSuelta(id) {
+  const p = bibliotecaIA.palabras[id];
+  const res = document.getElementById('resultado');
+  if (!p || !res) return;
+
+  const temaIds = limpiarArrayTemas(p.temaIds);
+  const ejemplos = deduplicarEjemplos(p.ejemplos || []);
+  const filasEjemplos = ejemplos.length
+    ? ejemplos.map(function(item, idx) {
+      return renderLineaEjemplo(item.ctx || '💬 Ejemplo de uso', item, true, 'borrarEjemploExtra(\'palabra\', \'' + escHtml(id) + '\', ' + idx + ')');
+    }).join('')
+    : '<div class="muted" style="text-align:left;">Sin ejemplos aún. Usa IA para generar ejemplos contextuales.</div>';
+
+  res.style.display = 'block';
+  res.innerHTML =
+    '<h3>' +
+    '<span>🏷️ ' + escHtml(p.palabra) + '</span>' +
+    '<button class="secondary btn-small" data-speak="' + escHtml(p.palabra) + '" data-lang="en-US" onclick="hablarDesdeBoton(this)">🔊 Pronunciar</button>' +
+    '<span class="tag tipo" style="margin:0;">' + escHtml(p.categoria || 'Vocabulario') + '</span>' +
+    '</h3>' +
+    '<p class="traduccion">Español: ' + escHtml(p.es) + '</p>' +
+    (p.nota ? '<div class="nota-profesional"><div class="nota-profesional-titulo">📘 Nota gramatical y de uso</div><div>' + escHtml(p.nota) + '</div></div>' : '') +
+    '<div class="example-block">' + filasEjemplos + '</div>' +
+    renderSeccionTemasFicha('palabra', id, temaIds) +
+    '<div class="detalle-acciones">' +
+    '<button class="accent btn-small" onclick="enriquecerPalabraConIA(\'' + escHtml(id) + '\')">🤖 Enriquecer nota y ejemplos con IA</button>' +
+    '<button class="danger btn-small" onclick="borrarDeBiblioteca(\'palabra\', \'' + escHtml(id) + '\')">🗑 Eliminar palabra</button>' +
+    '</div>';
+}
+
+function borrarEjemploExtra(tipoItem, id, index) {
+  if (tipoItem === 'verbo' && bibliotecaIA.verbos[id]?.ejemplosExtra) {
+    bibliotecaIA.verbos[id].ejemplosExtra.splice(index, 1);
+  } else if (tipoItem === 'palabra' && bibliotecaIA.palabras[id]?.ejemplos) {
+    bibliotecaIA.palabras[id].ejemplos.splice(index, 1);
+  } else if (tipoItem === 'ejemplo' && bibliotecaIA.ejemplosSueltos[id]?.listaEjemplos) {
+    bibliotecaIA.ejemplosSueltos[id].listaEjemplos.splice(index, 1);
+  }
+  guardarBiblioteca();
+  refrescarVistaActual(tipoItem, id);
+}
+
+async function llamarGemini(contentsPrompt, generationConfig = null) {
+  const modelo = document.getElementById('modelo-ia').value.trim() || 'gemini-2.5-flash';
+  const key = obtenerClave();
+  if (!key) throw new Error('Falta tu API Key de Google AI Studio.');
+
+  const body = { contents: [{ parts: [{ text: contentsPrompt }] }] };
+  if (generationConfig) body.generationConfig = generationConfig;
+
+  const r = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(modelo) + ':generateContent?key=' + encodeURIComponent(key),
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+  );
+  const data = await r.json();
+  if (!r.ok) throw new Error('HTTP ' + r.status + ': ' + (data.error?.message || 'Error en la API.'));
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+function resolverTemasDesdeTitulos(titulosArray, opcionManual = '') {
+  const selTema = document.getElementById('tema-seleccionado')?.value || '';
+  const nuevoManual = document.getElementById('nuevo-tema')?.value.trim() || '';
+
+  if (opcionManual === '__none__' || selTema === '__none__') return [];
+
+  const resultadoIds = [];
+  if (nuevoManual) {
+    const id = crearOActualizarTema(nuevoManual, { tipo: 'Tema' });
+    if (id && !resultadoIds.includes(id)) resultadoIds.push(id);
+  } else if (selTema && selTema !== '__none__' && bibliotecaIA.temas[selTema]) {
+    resultadoIds.push(selTema);
+  }
+
+  for (const t of (Array.isArray(titulosArray) ? titulosArray : [])) {
+    const limpio = String(t || '').trim();
+    if (!limpio) continue;
+    const id = crearOActualizarTema(limpio, { tipo: 'Tema' });
+    if (id && !resultadoIds.includes(id)) resultadoIds.push(id);
+  }
+  return resultadoIds;
+}
+
+async function explicarVerboConIA(clave) {
+  const v = obtenerVerbo(clave);
+  if (!v) return;
+  const res = document.getElementById('respuesta-ia');
+  res.style.display = 'block';
+  res.textContent = '⏳ Generando nota profesional, ejemplos contextuales y referencias cruzadas para "' + clave + '"...';
+
+  const temasActuales = Object.values(bibliotecaIA.temas).map(function(t) { return t.titulo; });
+  const schema = {
+    type: 'OBJECT',
+    properties: {
+      notaProfesional: { type: 'STRING' },
+      temasTitulos: { type: 'ARRAY', items: { type: 'STRING' } },
+      ejemplos: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            contexto: { type: 'STRING' },
+            en: { type: 'STRING' },
+            es: { type: 'STRING' }
+          },
+          required: ['contexto', 'en', 'es']
+        }
+      }
+    },
+    required: ['notaProfesional', 'temasTitulos', 'ejemplos']
+  };
+
+  const prompt = 'Eres un lexicógrafo y profesor de inglés para hispanohablantes.\nAnaliza el verbo "' + clave + '" (' + v.es + '; conjugaciones: ' + v.p + ' / ' + v.t3 + ' / ' + v.pas + ' / ' + v.pp + ' / ' + v.g + ').\n\n1) "notaProfesional": Redacta una explicación CONCISE, profesional y práctica en español (3 a 5 líneas máximo, SIN saludos ni tono conversacional) que resuma matices clave de significado, errores frecuentes de hispanohablantes y preposiciones o estructuras habituales.\n2) "ejemplos": Genera entre 5 y 8 ejemplos variados y de uso real (distintos significados, negación, pregunta, colocaciones o phrasal verbs clave, voz pasiva/condicional si aplica). Para CADA ejemplo, escribe en "contexto" un encabezado breve y claro con emoji que explique POR QUÉ o CÓMO se usa ese ejemplo.\n3) "temasTitulos": Asigna entre 2 y 3 temas para referencias cruzadas (por uso/contexto Y por gramática). Reutiliza estos temas si encajan: ' + temasActuales.join(', ') + '.';
+
+  try {
+    const raw = await llamarGemini(prompt, { responseMimeType: 'application/json', responseSchema: schema });
+    const data = JSON.parse(raw || '{}');
+
+    const nuevosEjemplos = (data.ejemplos || []).map(function(e) {
+      return { ctx: e.contexto, en: e.en, es: e.es };
+    });
+
+    const cur = bibliotecaIA.verbos[clave] || {};
+    const temaIdsPrevios = limpiarArrayTemas(cur.temaIds);
+    const temaIdsNuevos = resolverTemasDesdeTitulos(data.temasTitulos);
+    const temaIdsCombinados = [...new Set([...temaIdsPrevios, ...temaIdsNuevos])];
+
+    bibliotecaIA.verbos[clave] = {
+      ...cur,
+      ...(VERBOS[clave] ? {} : v),
+      notaProfesional: String(data.notaProfesional || '').trim(),
+      ejemplosExtra: deduplicarEjemplos([...(cur.ejemplosExtra || []), ...nuevosEjemplos]),
+      temaIds: temaIdsCombinados
+    };
+    delete bibliotecaIA.verbos[clave]._sinTemaManual;
+
+    guardarBiblioteca();
+    poblarSelectTemas();
+    poblarListaPalabras();
+    mostrarVerbo(clave, false);
+
+    res.textContent = '📘 ' + data.notaProfesional + '\n\n' +
+      nuevosEjemplos.map(function(e) { return '• ' + e.ctx + ': ' + e.en + ' (' + e.es + ')'; }).join('\n');
+    if (hablarAutoIA) hablarFraseIA();
+  } catch (err) {
+    res.textContent = '❌ ' + err.message;
+  }
+}
+
+async function enriquecerPalabraConIA(id) {
+  const p = bibliotecaIA.palabras[id];
+  if (!p) return;
+  const res = document.getElementById('respuesta-ia');
+  res.style.display = 'block';
+  res.textContent = '⏳ Generando nota profesional y ejemplos contextuales para "' + p.palabra + '"...';
+
+  const temasActuales = Object.values(bibliotecaIA.temas).map(function(t) { return t.titulo; });
+  const schema = {
+    type: 'OBJECT',
+    properties: {
+      notaProfesional: { type: 'STRING' },
+      temasTitulos: { type: 'ARRAY', items: { type: 'STRING' } },
+      ejemplos: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            contexto: { type: 'STRING' },
+            en: { type: 'STRING' },
+            es: { type: 'STRING' }
+          },
+          required: ['contexto', 'en', 'es']
+        }
+      }
+    },
+    required: ['notaProfesional', 'temasTitulos', 'ejemplos']
+  };
+
+  const prompt = 'Analiza la palabra o expresión en inglés "' + p.palabra + '" (' + p.categoria + ': ' + p.es + ').\n1) "notaProfesional": Explicación concisa y profesional (sin charla conversacional) sobre registro, colocaciones, preposiciones y matices de uso.\n2) "ejemplos": 4 a 6 ejemplos variados donde cada uno incluya en "contexto" el porqué/utilidad del ejemplo con emoji.\n3) "temasTitulos": 2 a 3 temas para referencias cruzadas (reutiliza si encajan: ' + temasActuales.join(', ') + ').';
+
+  try {
+    const raw = await llamarGemini(prompt, { responseMimeType: 'application/json', responseSchema: schema });
+    const data = JSON.parse(raw || '{}');
+    const nuevos = (data.ejemplos || []).map(function(e) { return { ctx: e.contexto, en: e.en, es: e.es }; });
+    p.nota = String(data.notaProfesional || p.nota || '').trim();
+    p.ejemplos = deduplicarEjemplos([...(p.ejemplos || []), ...nuevos]);
+    p.temaIds = [...new Set([...limpiarArrayTemas(p.temaIds), ...resolverTemasDesdeTitulos(data.temasTitulos)])];
+
+    guardarBiblioteca();
+    poblarSelectTemas();
+    poblarListaPalabras();
+    mostrarPalabraSuelta(id);
+    res.textContent = '✅ "' + p.palabra + '" enriquecida con ' + nuevos.length + ' ejemplos contextuales y nota profesional.';
+  } catch (err) {
+    res.textContent = '❌ ' + err.message;
+  }
+}
+
+async function guardarDesdeChatIA() {
+  const res = document.getElementById('respuesta-ia');
+  const textoChat = ultimaRespuestaChat || (res.style.display !== 'none' ? res.textContent : '');
+  const consulta = ultimaConsultaChat || document.getElementById('prompt-ia').value.trim();
+
+  if (!textoChat || textoChat.startsWith('⏳') || textoChat.startsWith('❌')) {
+    alert('Primero haz una consulta con "📤 Preguntar a Gemini" para poder extraer y guardar su contenido.');
+    return;
+  }
+
+  await procesarGuardadoEstructuradoIA(
+    'Extrae y estructura TODO el contenido educativo útil de esta consulta y respuesta, SIN guardar la conversación ni saludos. Sintetiza notas concisas y profesionales, y extrae TODOS los ejemplos mencionados (o complétalos si falta traducción), cada uno con su encabezado "contexto" explicando por qué o cómo se usa.\n\nConsulta del usuario: ' + consulta + '\n\nRespuesta obtenida:\n' + textoChat,
+    '⏳ Extrayendo explicación concisa, todos los ejemplos contextuales y temas cruzados...'
+  );
+}
+
+async function procesarGuardadoEstructuradoIA(contenidoBase, mensajeCarga) {
+  const res = document.getElementById('respuesta-ia');
+  const selTema = document.getElementById('tema-seleccionado').value;
+  const nuevoTemaManual = document.getElementById('nuevo-tema').value.trim();
+  const temasExistentes = Object.values(bibliotecaIA.temas).map(function(t) { return t.titulo; });
+
+  let temaForzadoTitulo = '';
+  if (nuevoTemaManual) temaForzadoTitulo = nuevoTemaManual;
+  else if (selTema && selTema !== '__none__' && bibliotecaIA.temas[selTema]) {
+    temaForzadoTitulo = bibliotecaIA.temas[selTema].titulo;
+  }
+
+  res.style.display = 'block';
+  res.textContent = mensajeCarga;
+
+  const schema = {
+    type: 'OBJECT',
+    properties: {
+      temas: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            titulo: { type: 'STRING' },
+            tipo: { type: 'STRING' },
+            es: { type: 'STRING' },
+            explicacion: { type: 'STRING' },
+            ejemplos: {
+              type: 'ARRAY',
+              items: {
+                type: 'OBJECT',
+                properties: {
+                  contexto: { type: 'STRING' },
+                  en: { type: 'STRING' },
+                  es: { type: 'STRING' }
+                },
+                required: ['contexto', 'en', 'es']
+              }
+            }
+          },
+          required: ['titulo', 'tipo', 'es', 'explicacion', 'ejemplos']
+        }
+      },
+      verbos: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            base: { type: 'STRING' },
+            p: { type: 'STRING' },
+            t3: { type: 'STRING' },
+            pas: { type: 'STRING' },
+            pp: { type: 'STRING' },
+            g: { type: 'STRING' },
+            es: { type: 'STRING' },
+            notaProfesional: { type: 'STRING' },
+            temasTitulos: { type: 'ARRAY', items: { type: 'STRING' } },
+            ejemplosContextuales: {
+              type: 'ARRAY',
+              items: {
+                type: 'OBJECT',
+                properties: {
+                  contexto: { type: 'STRING' },
+                  en: { type: 'STRING' },
+                  es: { type: 'STRING' }
+                },
+                required: ['contexto', 'en', 'es']
+              }
+            }
+          },
+          required: ['base', 'p', 't3', 'pas', 'pp', 'g', 'es', 'notaProfesional', 'temasTitulos', 'ejemplosContextuales']
+        }
+      },
+      palabras: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            palabra: { type: 'STRING' },
+            categoria: { type: 'STRING' },
+            es: { type: 'STRING' },
+            notaProfesional: { type: 'STRING' },
+            temasTitulos: { type: 'ARRAY', items: { type: 'STRING' } },
+            ejemplos: {
+              type: 'ARRAY',
+              items: {
+                type: 'OBJECT',
+                properties: {
+                  contexto: { type: 'STRING' },
+                  en: { type: 'STRING' },
+                  es: { type: 'STRING' }
+                },
+                required: ['contexto', 'en', 'es']
+              }
+            }
+          },
+          required: ['palabra', 'categoria', 'es', 'notaProfesional', 'temasTitulos', 'ejemplos']
+        }
+      },
+      ejemplosSueltos: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            titulo: { type: 'STRING' },
+            tipo: { type: 'STRING' },
+            es: { type: 'STRING' },
+            explicacion: { type: 'STRING' },
+            ejemploPrincipal: { type: 'STRING' },
+            ctxPrincipal: { type: 'STRING' },
+            temasTitulos: { type: 'ARRAY', items: { type: 'STRING' } },
+            listaEjemplos: {
+              type: 'ARRAY',
+              items: {
+                type: 'OBJECT',
+                properties: {
+                  contexto: { type: 'STRING' },
+                  en: { type: 'STRING' },
+                  es: { type: 'STRING' }
+                },
+                required: ['contexto', 'en', 'es']
+              }
+            }
+          },
+          required: ['titulo', 'tipo', 'es', 'explicacion', 'ejemploPrincipal', 'ctxPrincipal', 'temasTitulos', 'listaEjemplos']
+        }
+      }
+    },
+    required: ['temas', 'verbos', 'palabras', 'ejemplosSueltos']
+  };
+
+  const instruccion = 'Eres un lexicógrafo y organizador de biblioteca de inglés para hispanohablantes.\nTemas actuales en la biblioteca: ' + temasExistentes.length ? temasExistentes.join(', ') : '(ninguno aún)' + '.\n\nREGLAS ESTRICTAS DE ESTRUCTURA Y CALIDAD:\n1) NO guardes conversación ni saludos ("¡Hola!", "Claro que sí", etc.). Toda "notaProfesional" o "explicacion" debe ser concisa, objetiva y útil (regla gramatical, registro, colocaciones, matices).\n2) Clasifica sin mezclar:\n   - "temas": Temas organizadores o lecciones gramaticales generales con su resumen conciso y ejemplos con "contexto".\n   - "verbos": SOLO verbos en infinitivo base en minúsculas (ej: "board", "fly"). Verifica conjugaciones correctas. Incluye TODOS los ejemplos contextuales relevantes en "ejemplosContextuales", cada uno con su encabezado "contexto" explicando por qué/cómo se usa.\n   - "palabras": Sustantivos, adjetivos, adverbios, preposiciones, expresiones o phrasal verbs (no verbos simples). Incluye "notaProfesional" y todos los ejemplos útiles con su encabezado "contexto".\n   - "ejemplosSueltos": Frases completas de conversación, modismos o estructuras comparativas cuando no pertenezcan a una sola palabra concreta.\n3) REFERENCIAS CRUZADAS OBLIGATORIAS ("temasTitulos"):\n   - Ninguna palabra, verbo o ejemplo debe quedar sin tema (SALVO esta vez, porque el usuario seleccionó manualmente dejar sin tema: devuelve []).\n   - ' + (selTema === '__none__' ? 'Devuelve temasTitulos: [] en todos los elementos.' : temaForzadoTitulo ? 'Incluye siempre "' + temaForzadoTitulo + '" en temasTitulos y añade 1 o 2 temas adicionales relevantes (ej. categoría gramatical o situación de uso) para referencias cruzadas.' : 'Para cada verbo, palabra y ejemplo, asigna de 1 a 3 temas en "temasTitulos" combinando tema de uso/contexto (ej: "Viajes y Aeropuerto") y tema gramatical/estructural si aporta valor (ej: "Verbos Irregulares", "Preposiciones", "Phrasal Verbs"). Reutiliza los temas existentes siempre que correspondan o crea nuevos temas claros en español.') + '\n\n' + contenidoBase;
+
+  try {
+    const raw = await llamarGemini(instruccion, { responseMimeType: 'application/json', responseSchema: schema });
+    const nuevo = JSON.parse(raw || '{}');
+    let contT = 0, contV = 0, contP = 0, contE = 0;
+
+    for (const t of (nuevo.temas || [])) {
+      if (!t.titulo?.trim()) continue;
+      const norm = normalizarTextoComparacion(t.titulo);
+      const existe = Object.values(bibliotecaIA.temas).some(function(x) { return normalizarTextoComparacion(x.titulo) === norm; });
+      const tId = crearOActualizarTema(t.titulo, {
+        tipo: t.tipo || 'Tema',
+        es: t.es || '',
+        explicacion: t.explicacion || '',
+        ejemplos: (t.ejemplos || []).map(function(e) { return { ctx: e.contexto, en: e.en, es: e.es }; })
+      });
+      if (tId) temasExpandidos[tId] = true;
+      if (!existe) contT++;
+    }
+
+    for (const v of (nuevo.verbos || [])) {
+      const k = String(v.base || '').trim().toLowerCase();
+      if (!k) continue;
+      const cur = bibliotecaIA.verbos[k] || {};
+      const nuevosIds = selTema === '__none__' ? [] : resolverTemasDesdeTitulos(v.temasTitulos);
+      const idsFinales = selTema === '__none__' ? [] : [...new Set([...limpiarArrayTemas(cur.temaIds), ...nuevosIds])];
+
+      const nuevosEjemplos = (v.ejemplosContextuales || []).map(function(e) {
+        return { ctx: e.contexto, en: e.en, es: e.es };
+      });
+
+      const ficha = {
+        ...cur,
+        notaProfesional: [cur.notaProfesional, v.notaProfesional].filter(Boolean).filter(function(x, i, a) { return a.indexOf(x) === i; }).join(' '),
+        ejemplosExtra: deduplicarEjemplos([...(cur.ejemplosExtra || []), ...nuevosEjemplos]),
+        temaIds: idsFinales,
+        aprendida: cur.aprendida || false
+      };
+
+      if (!VERBOS[k]) {
+        ficha.p = v.p;
+        ficha.t3 = v.t3;
+        ficha.pas = v.pas;
+        ficha.pp = v.pp;
+        ficha.g = v.g;
+        ficha.es = v.es;
+      }
+      if (idsFinales.length === 0 && selTema === '__none__') ficha._sinTemaManual = true;
+      else delete ficha._sinTemaManual;
+
+      bibliotecaIA.verbos[k] = ficha;
+      contV++;
+    }
+
+    for (const p of (nuevo.palabras || [])) {
+      const palabra = String(p.palabra || '').trim();
+      if (!palabra) continue;
+      const id = normalizarId(palabra);
+      const cur = bibliotecaIA.palabras[id] || {};
+      const nuevosIds = selTema === '__none__' ? [] : resolverTemasDesdeTitulos(p.temasTitulos);
+      const idsFinales = selTema === '__none__' ? [] : [...new Set([...limpiarArrayTemas(cur.temaIds), ...nuevosIds])];
+      const nuevosEjemplos = (p.ejemplos || []).map(function(e) { return { ctx: e.contexto, en: e.en, es: e.es }; });
+
+      bibliotecaIA.palabras[id] = {
+        palabra: palabra,
+        categoria: p.categoria || cur.categoria || 'Vocabulario',
+        es: p.es || cur.es || '',
+        nota: String(p.notaProfesional || cur.nota || '').trim(),
+        ejemplos: deduplicarEjemplos([...(cur.ejemplos || []), ...nuevosEjemplos]),
+        temaIds: idsFinales,
+        aprendida: cur.aprendida || false
+      };
+      if (idsFinales.length === 0 && selTema === '__none__') bibliotecaIA.palabras[id]._sinTemaManual = true;
+      contP++;
+    }
+
+    for (const e of (nuevo.ejemplosSueltos || [])) {
+      const titulo = String(e.titulo || e.ejemploPrincipal || '').trim();
+      if (!titulo) continue;
+      const id = normalizarId(titulo);
+      const cur = bibliotecaIA.ejemplosSueltos[id] || {};
+      const nuevosIds = selTema === '__none__' ? [] : resolverTemasDesdeTitulos(e.temasTitulos);
+      const idsFinales = selTema === '__none__' ? [] : [...new Set([...limpiarArrayTemas(cur.temaIds), ...nuevosIds])];
+      const lista = (e.listaEjemplos || []).map(function(item) { return { ctx: item.contexto, en: item.en, es: item.es }; });
+
+      bibliotecaIA.ejemplosSueltos[id] = {
+        titulo: titulo,
+        tipo: e.tipo || cur.tipo || 'Ejemplo',
+        es: e.es || cur.es || '',
+        explicacion: String(e.explicacion || cur.explicacion || '').trim(),
+        ejemploPrincipal: e.ejemploPrincipal || cur.ejemploPrincipal || '',
+        ctxPrincipal: e.ctxPrincipal || cur.ctxPrincipal || '💬 Expresión principal',
+        listaEjemplos: deduplicarEjemplos([...(cur.listaEjemplos || []), ...lista]),
+        temaIds: idsFinales,
+        aprendida: cur.aprendida || false
+      };
+      contE++;
+    }
+
+    guardarBiblioteca();
+    poblarSelectTemas();
+    poblarListaPalabras();
+    res.textContent = '✅ ¡Biblioteca actualizada! Se añadieron ' + contV + ' verbo(s), ' + contT + ' tema(s) y ' + contE + ' ejemplo(s) suelto(s) a tu barra lateral (marcados con ✨).';
+  } catch (err) {
+    res.textContent = '❌ Error al añadir: ' + err.message;
+  }
+}
+
+async function guardarDesdeChatIA() {
+  const res = document.getElementById('respuesta-ia');
+  const textoChat = ultimaRespuestaChat || (res.style.display !== 'none' ? res.textContent : '');
+  const consulta = ultimaConsultaChat || document.getElementById('prompt-ia').value.trim();
+
+  if (!textoChat || textoChat.startsWith('⏳') || textoChat.startsWith('❌')) {
+    alert('Primero haz una consulta con "📤 Preguntar a Gemini" para poder extraer y guardar su contenido.');
+    return;
+  }
+
+  await procesarGuardadoEstructuradoIA(
+    'Extrae y estructura TODO el contenido educativo útil de esta consulta y respuesta, SIN guardar la conversación ni saludos. Sintetiza notas concisas y profesionales, y extrae TODOS los ejemplos mencionados (o complétalos si falta traducción), cada uno con su encabezado "contexto" explicando por qué o cómo se usa.\n\nConsulta del usuario: ' + consulta + '\n\nRespuesta obtenida:\n' + textoChat,
+    '⏳ Extrayendo explicación concisa, todos los ejemplos contextuales y temas cruzados...'
+  );
+}
+
+// =====================================================
+// 8. TEMAS BASE Y ORGANIZACIÓN AUTOMÁTICA
+// =====================================================
+const DEFAULT_TEMAS_META = {
+  "Verbos Básicos": { tipo: "Gramática y Frecuencia", es: "Los verbos más esenciales y frecuentes del inglés cotidiano." },
+  "Verbos Irregulares": { tipo: "Gramática", es: "Verbos cuyo pasado simple y participio no siguen la regla estándar -ed." },
+  "Verbos Regulares": { tipo: "Gramática", es: "Verbos cuyo pasado simple y participio se forman añadiendo -ed." },
+  "Verbos de Estado (Stative)": { tipo: "Gramática", es: "Verbos de estado mental, posesión o percepción que por regla general no usan forma continua (-ing)." },
+  "Gramática Esencial": { tipo: "Gramática", es: "Verbos auxiliares y pilares estructurales del inglés (be, have, do)." },
+  "Acciones Cotidianas": { tipo: "Uso y Contexto", es: "Acciones habituales de la vida diaria." },
+  "Movimiento y Viajes": { tipo: "Uso y Contexto", es: "Desplazamientos, postura, dirección, transporte y viajes." },
+  "Comunicación": { tipo: "Uso y Contexto", es: "Hablar, preguntar, escuchar, escribir, leer y expresar ideas." },
+  "Mente, Ideas y Sentimientos": { tipo: "Uso y Contexto", es: "Pensamiento, memoria, emociones, aprendizaje y comprensión." },
+  "Trabajo, Dinero y Creación": { tipo: "Uso y Contexto", es: "Trabajo, comercio, pagos, liderazgo y creación." },
+  "Hogar y Objetos": { tipo: "Uso y Contexto", es: "Manejo de objetos, limpieza, orden y tareas del hogar." },
+  "Naturaleza y Física": { tipo: "Uso y Contexto", es: "Fenómenos naturales, clima, plantas, luz y cambios físicos." }
+};
+
+const BASE_THEME_NAMES = Object.keys(DEFAULT_TEMAS_META);
+
+const DEFAULT_VERB_THEMES = {
+  be: [0,1], have: [0,1], do: [0,1], say: [0,1], go: [0,1], get: [0,1], make: [0,1],
+  know: [0,1,8], think: [0,1,8], take: [0,1,5], see: [0,1,8], come: [0,1,6],
+  want: [0,2,3,8], look: [0,2,5], use: [0,2,5], find: [0,1,5], give: [0,1,5],
+  tell: [0,1,7], work: [0,2,9], call: [0,2,7], try: [0,2,5], ask: [0,2,7],
+  need: [0,2,3,5], feel: [0,1,8], become: [1,5], leave: [0,1,6], put: [0,1,10],
+  mean: [1,3,7], keep: [0,1,10], let: [0,1,7], begin: [1,5], seem: [2,3,8],
+  help: [0,2,5], talk: [0,2,7], turn: [2,6], start: [0,2,5], show: [1,7],
+  hear: [1,7], play: [0,2,5], run: [0,1,6], move: [2,6], live: [0,2,5],
+  believe: [2,3,8], hold: [1,10], bring: [1,6,10], happen: [2,5], write: [0,1,7,9],
+  sit: [1,10], stand: [1,10], lose: [1,5], set: [1,10,9], meet: [1,7,9],
+  read: [0,1,7], grow: [1,11], pay: [1,9], fall: [1,6,11], cut: [1,10],
+  rise: [1,6,11], catch: [1,5,6], teach: [1,7,9], learn: [0,1,8],
+  prove: [1,8], send: [1,7,9], build: [1,9], buy: [0,1,9], cost: [1,3,9],
+  spend: [1,9,5], wake: [1,5], break: [1,10], choose: [1,8],
+  speak: [0,1,7], wear: [1,5,10], draw: [1,9], drive: [1,6],
+  drink: [0,1,5], eat: [0,1,5], fight: [1,5], forget: [1,8],
+  forgive: [1,8], hide: [1,10], hit: [1,5], hurt: [1,8],
+  lay: [1,10], lead: [1,9], lie: [1,10], light: [1,10,11],
+  mistake: [1,8], overcome: [1,8], quit: [1,9], ring: [1,7,10],
+  sell: [1,9], shake: [1,5], shine: [1,11], shoot: [1,9],
+  shut: [1,10], sing: [1,7], sink: [1,11], sleep: [0,1,5],
+  slide: [1,6], spread: [1,10,11], steal: [1,5], stick: [1,10],
+  strike: [1,9,11], swear: [1,7], sweep: [1,10], swim: [1,6,11],
+  throw: [1,5], understand: [0,1,3,8], win: [1,5], hang: [1,10],
+  dig: [1,11], feed: [1,10,5], fly: [1,6,11], forbid: [1,7],
+  freeze: [1,11], grind: [1,10], kneel: [1,6], lean: [1,6],
+  leap: [1,6], walk: [0,2,6], enter: [2,6], climb: [2,6,11]
+};
+
+function inicializarTemasBaseYReferencias() {
+  const mapaTituloAId = {};
+  for (const titulo in DEFAULT_TEMAS_META) {
+    const meta = DEFAULT_TEMAS_META[titulo];
+    mapaTituloAId[titulo] = crearOActualizarTema(titulo, { tipo: meta.tipo, es: meta.es });
+  }
+
+  for (const k in VERBOS) {
+    const custom = bibliotecaIA.verbos[k] || {};
+    const actuales = limpiarArrayTemas(custom.temaIds);
+    if (actuales.length === 0 && !custom._sinTemaManual) {
+      const defaults = (DEFAULT_VERB_THEMES[k] || [0]).map(i => BASE_THEME_NAMES[i]).map(t => mapaTituloAId[t]).filter(Boolean);
+      bibliotecaIA.verbos[k] = { ...custom, temaIds: defaults };
+    } else if (bibliotecaIA.verbos[k]) {
+      bibliotecaIA.verbos[k].temaIds = actuales;
+    }
+  }
+}
+
+function autoOrganizarConIA() {
+  const res = document.getElementById('respuesta-ia');
+  const itemsSinTema = obtenerTodosLosItems().filter(item => item.temaIds.length === 0);
+  if (itemsSinTema.length === 0) {
+    res.style.display = 'block';
+    res.textContent = '✅ Todos los elementos ya tienen tema asignado.';
+    return;
+  }
+  res.style.display = 'block';
+  res.textContent = '⏳ Organizando automáticamente ' + itemsSinTema.length + ' elementos sin tema...';
+
+  const temasExistentes = Object.values(bibliotecaIA.temas).map(t => t.titulo);
+  const schema = {
+    type: 'OBJECT',
+    properties: {
+      asignaciones: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            verbo: { type: 'STRING' },
+            tema: { type: 'STRING' },
+            razon: { type: 'STRING' }
+          },
+          required: ['verbo', 'tema', 'razon']
+        }
+      }
+    },
+    required: ['asignaciones']
+  };
+
+  const verbosSinTema = itemsSinTema.filter(i => i.tipoItem === 'verbo').map(i => i.titulo);
+  const prompt = 'Eres un organizador de vocabulario de inglés. Tengo estos verbos sin tema: ' + verbosSinTema.join(', ') + '.\nTemas disponibles: ' + temasExistentes.join(', ') + '.\nAsigna cada verbo al tema más apropiado. Si no encaja en ninguno, crea un tema nuevo breve en español. Devuelve JSON con "asignaciones": [{verbo, tema, razon}].';
+
+  llamarGemini(prompt, { responseMimeType: 'application/json', responseSchema: schema }).then(raw => {
+    try {
+      const data = JSON.parse(raw || '{}');
+      for (const a of (data.asignaciones || [])) {
+        const k = a.verbo.trim().toLowerCase();
+        if (bibliotecaIA.verbos[k]) {
+          const temaId = crearOActualizarTema(a.tema, { tipo: 'Tema' });
+          if (!bibliotecaIA.verbos[k].temaIds) bibliotecaIA.verbos[k].temaIds = [];
+          if (!bibliotecaIA.verbos[k].temaIds.includes(temaId)) {
+            bibliotecaIA.verbos[k].temaIds.push(temaId);
+          }
+        }
+      }
+      guardarBiblioteca();
+      poblarSelectTemas();
+      poblarListaPalabras();
+      res.textContent = '✅ Se organizaron ' + (data.asignaciones || []).length + ' verbos en temas.';
+    } catch (err) {
+      res.textContent = '❌ Error al organizar: ' + err.message;
+    }
+  }).catch(err => {
+    res.textContent = '❌ Error de conexión: ' + err.message;
+  });
+}
+
+function reforzarReferenciasCruzadasIA() {
+  const res = document.getElementById('respuesta-ia');
+  const items = obtenerTodosLosItems();
+  const conUnSoloTema = items.filter(i => i.temaIds.length === 1);
+  if (conUnSoloTema.length === 0) {
+    res.style.display = 'block';
+    res.textContent = '✅ Todos los elementos ya tienen múltiples temas o no necesitan más.';
+    return;
+  }
+  res.style.display = 'block';
+  res.textContent = '⏳ Buscando referencias cruzadas para ' + conUnSoloTema.length + ' elementos...';
+
+  const temasExistentes = Object.values(bibliotecaIA.temas).map(t => t.titulo);
+  const schema = {
+    type: 'OBJECT',
+    properties: {
+      sugerencias: {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            verbo: { type: 'STRING' },
+            temaSugerido: { type: 'STRING' },
+            razon: { type: 'STRING' }
+          },
+          required: ['verbo', 'temaSugerido', 'razon']
+        }
+      }
+    },
+    required: ['sugerencias']
+  };
+
+  const verbos = conUnSoloTema.filter(i => i.tipoItem === 'verbo').map(i => i.titulo);
+  const prompt = 'Tengo estos verbos con un solo tema: ' + verbos.join(', ') + '.\nTemas existentes: ' + temasExistentes.join(', ') + '.\nSugiere temas adicionales (referencias cruzadas) para cada verbo según su significado y uso. Devuelve JSON con "sugerencias": [{verbo, temaSugerido, razon}].';
+
+  llamarGemini(prompt, { responseMimeType: 'application/json', responseSchema: schema }).then(raw => {
+    try {
+      const data = JSON.parse(raw || '{}');
+      let count = 0;
+      for (const s of (data.sugerencias || [])) {
+        const k = s.verbo.trim().toLowerCase();
+        if (bibliotecaIA.verbos[k]) {
+          const temaId = crearOActualizarTema(s.temaSugerido, { tipo: 'Tema' });
+          if (!bibliotecaIA.verbos[k].temaIds) bibliotecaIA.verbos[k].temaIds = [];
+          if (!bibliotecaIA.verbos[k].temaIds.includes(temaId)) {
+            bibliotecaIA.verbos[k].temaIds.push(temaId);
+            count++;
+          }
+        }
+      }
+      guardarBiblioteca();
+      poblarSelectTemas();
+      poblarListaPalabras();
+      res.textContent = '✅ Se agregaron ' + count + ' referencias cruzadas.';
+    } catch (err) {
+      res.textContent = '❌ Error al procesar: ' + err.message;
+    }
+  }).catch(err => {
+    res.textContent = '❌ Error de conexión: ' + err.message;
+  });
+}
+
+function alternarTodosTemas() {
+  const ids = Object.keys(bibliotecaIA.temas);
+  const algunoAbierto = ids.some(id => temasExpandidos[id]);
+  for (const id of ids) temasExpandidos[id] = !algunoAbierto;
+  poblarListaPalabras();
+}
+
+function limpiarExtrasVerbo(clave) {
+  if (!bibliotecaIA.verbos[clave]) return;
+  delete bibliotecaIA.verbos[clave].notaProfesional;
+  delete bibliotecaIA.verbos[clave].ejemplosExtra;
+  guardarBiblioteca();
+  poblarListaPalabras();
+  mostrarVerbo(clave, false);
+}
+
+function toggleAprendida(tipoItem, id) {
+  if (tipoItem === 'tema' && bibliotecaIA.temas[id]) {
+    bibliotecaIA.temas[id].aprendida = !bibliotecaIA.temas[id].aprendida;
+  } else if (tipoItem === 'verbo') {
+    const v = obtenerVerbo(id);
+    if (!v) return;
+    bibliotecaIA.verbos[id] = { ...(bibliotecaIA.verbos[id] || {}), temaIds: v.temaIds, aprendida: !v.aprendida };
+  } else if (tipoItem === 'palabra' && bibliotecaIA.palabras[id]) {
+    bibliotecaIA.palabras[id].aprendida = !bibliotecaIA.palabras[id].aprendida;
+  } else if (tipoItem === 'ejemplo' && bibliotecaIA.ejemplosSueltos[id]) {
+    bibliotecaIA.ejemplosSueltos[id].aprendida = !bibliotecaIA.ejemplosSueltos[id].aprendida;
+  }
+  guardarBiblioteca();
+  poblarListaPalabras();
+}
+</script>
+</body>
+</html>
